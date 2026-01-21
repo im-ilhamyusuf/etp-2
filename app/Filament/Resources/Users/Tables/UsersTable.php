@@ -32,12 +32,7 @@ class UsersTable
                     ->badge()
                     ->color( function ($record) {
                         return $record->role == 'admin' ? 'success' : 'warning';
-                    })
-                    ->width('100px'),
-                ImageColumn::make('avatar')
-                    ->label('Foto')
-                    ->disk('public')
-                    ->width('100px'),
+                    }),
             ])
             ->filters([
                 //

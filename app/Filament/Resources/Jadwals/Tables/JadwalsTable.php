@@ -22,11 +22,11 @@ class JadwalsTable
                     ->dateTime(),
                 TextColumn::make('biaya_1')
                     ->numeric()
-                    ->prefix('Rp. ')
+                    ->prefix('Rp')
                     ->width('150px'),
                 TextColumn::make('biaya_2')
                     ->numeric()
-                    ->prefix('Rp. ')
+                    ->prefix('Rp')
                     ->width('150px'),
                 IconColumn::make('status')
                     ->boolean()

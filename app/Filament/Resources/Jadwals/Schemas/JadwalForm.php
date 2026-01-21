@@ -37,10 +37,12 @@ class JadwalForm
                         ->numeric(),
                     TextInput::make('biaya_1')
                         ->required()
-                        ->numeric(),
+                        ->numeric()
+                        ->prefix('Rp'),
                     TextInput::make('biaya_2')
                         ->required()
-                        ->numeric(),
+                        ->numeric()
+                        ->prefix('Rp'),
                 ])
             ]);
     }

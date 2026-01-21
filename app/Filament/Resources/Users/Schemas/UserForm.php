@@ -18,8 +18,7 @@ class UserForm
         return $schema
             ->components([
                 Section::make("Formulir User")
-                ->icon(Heroicon::OutlinedDocumentText)
-                    ->columns(3)
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Group::make([
                             TextInput::make('name')
@@ -41,18 +40,8 @@ class UserForm
                                 ->password()
                                 ->required(fn ($context) => $context === 'create')
                                 ->dehydrated(fn ($state) => filled($state)),
-                        ])
-                        ->columnSpan(2),
-
-                        FileUpload::make('avatar')
-                            ->label("Foto")
-                            ->image()
-                            ->imageEditor()
-                            ->imageCropAspectRatio('1:1')
-                            ->disk('public')
-                            ->directory('user')
+                        ]),
                     ])
-            ])
-            ->columns(1);
+            ]);
     }
 }

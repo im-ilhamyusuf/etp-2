@@ -28,10 +28,10 @@ class JadwalInfolist
                             ->columnSpan(2),
                         TextEntry::make('biaya_1')
                             ->numeric()
-                            ->prefix('Rp. '),
+                            ->prefix('Rp'),
                         TextEntry::make('biaya_2')
                             ->numeric()
-                            ->prefix('Rp. '),
+                            ->prefix('Rp'),
                         TextEntry::make('kuota')
                             ->numeric(),
                         TextEntry::make('jumlah_peserta')
