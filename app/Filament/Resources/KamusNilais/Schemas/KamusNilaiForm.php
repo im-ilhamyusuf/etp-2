@@ -14,8 +14,8 @@ class KamusNilaiForm
         return $schema
             ->components([
                 Section::make("Formulir Kamus Nilai")
-                ->icon(Heroicon::OutlinedDocumentText)
-                ->schema([
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->schema([
                     TextInput::make('jumlah_benar')
                         ->required()
                         ->numeric(),
