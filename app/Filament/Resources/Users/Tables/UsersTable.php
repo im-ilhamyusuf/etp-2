@@ -7,6 +7,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -22,7 +23,8 @@ class UsersTable
                     ->width('20px'),
                 TextColumn::make('name')
                     ->label('Nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => ucwords($state)),
                 TextColumn::make('email')
                     ->searchable(),
                 TextColumn::make('role')
@@ -30,9 +32,12 @@ class UsersTable
                     ->badge()
                     ->color( function ($record) {
                         return $record->role == 'admin' ? 'success' : 'warning';
-                    }),
-                TextColumn::make('avatar')
-                    ->label('Foto'),
+                    })
+                    ->width('100px'),
+                ImageColumn::make('avatar')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->width('100px'),
             ])
             ->filters([
                 //

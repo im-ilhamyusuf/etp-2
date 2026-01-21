@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Filament\Resources\Biodatas\Schemas;
+namespace App\Filament\Resources\Pesertas\Schemas;
 
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Console\View\Components\Secret;
 
-class BiodataForm
+class PesertaForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -20,18 +20,25 @@ class BiodataForm
             ->components([
                 Section::make("Formulir Biodata Peserta")
                     ->icon(Heroicon::OutlinedDocumentText)
+                    ->columnSpan(2)
+                    ->columns(2)
                     ->schema([
                         Select::make('user_id')
                             ->label("Akun user")
                             ->options(User::peserta()->pluck('name', 'id'))
                             ->searchable(),
+                        TextInput::make('no_peserta')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('Otomatis dibuat sistem'),
                         Select::make('jenis_kelamin')
                             ->options(['L' => 'Laki-laki', 'P' => 'Perempuan'])
                             ->required()
                             ->searchable(),
                         TextInput::make('nik')
                             ->label("NIK")
-                            ->required(),
+                            ->required()
+                            ->unique(),
                         TextInput::make('tempat_lahir')
                             ->required(),
                         DatePicker::make('tanggal_lahir')
@@ -77,9 +84,19 @@ class BiodataForm
                         Textarea::make('alamat')
                             ->required()
                             ->columnSpanFull(),
+                    ]),
+
+                Section::make("Pas Foto")
+                    ->icon(Heroicon::OutlinedPhoto)
+                    ->schema([
+                        FileUpload::make('foto')
+                            ->image()
+                            ->imageEditor()
+                            ->imageCropAspectRatio('2:3')
+                            ->disk('public')
+                            ->directory('peserta')
                     ])
-                    ->columns(2),
             ])
-            ->columns(1);
+            ->columns(3);
     }
 }

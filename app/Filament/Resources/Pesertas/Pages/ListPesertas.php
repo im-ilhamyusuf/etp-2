@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Biodatas\Pages;
+namespace App\Filament\Resources\Pesertas\Pages;
 
-use App\Filament\Resources\Biodatas\BiodataResource;
+use App\Filament\Resources\Pesertas\PesertaResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListBiodatas extends ListRecords
+class ListPesertas extends ListRecords
 {
-    protected static string $resource = BiodataResource::class;
+    protected static string $resource = PesertaResource::class;
 
     protected function getHeaderActions(): array
     {

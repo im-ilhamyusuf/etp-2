@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Jadwal extends Model
@@ -14,11 +15,15 @@ class Jadwal extends Model
         'biaya_2'
     ];
 
+    protected $casts = [
+        "tutup" => 'datetime'
+    ];
+
     protected $appends = ['status'];
 
     public function getStatusAttribute()
     {
-        return $this->tutup >= now();
+        return $this->tutup?->isFuture() ?? false;
     }
 
     public function scopeAktif($query)

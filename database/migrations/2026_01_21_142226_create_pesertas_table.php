@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('biodatas', function (Blueprint $table) {
+        Schema::create('pesertas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('no_peserta')->unique();
+            $table->string('foto')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('nik', 20)->unique();
             $table->string('tempat_lahir');
@@ -38,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('biodatas');
+        Schema::dropIfExists('pesertas');
     }
 };

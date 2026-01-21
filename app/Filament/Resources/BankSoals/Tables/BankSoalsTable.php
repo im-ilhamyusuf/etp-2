@@ -32,23 +32,27 @@ class BankSoalsTable
                         } else {
                             return Color::Green;
                         }
-                    }),
+                    })
+                    ->width('150px'),
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('jumlah_soal')
-                    ->getStateUsing(fn ($record) => $record->soal->count()),
+                    ->getStateUsing(fn ($record) => $record->soal->count())
+                    ->width('150px'),
                 TextColumn::make('gambar')
                     ->label('Gambar')
                     ->color(Color::Blue)
                     ->url(fn ($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Lihat Gambar'),
+                    ->formatStateUsing(fn () => 'Lihat Gambar')
+                    ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
                     ->url(fn ($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Putar Audio'),
+                    ->formatStateUsing(fn () => 'Putar Audio')
+                    ->width('150px'),
             ])
             ->defaultSort('jenis')
             ->filters([

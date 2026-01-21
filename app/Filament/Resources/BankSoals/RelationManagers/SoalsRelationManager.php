@@ -85,13 +85,15 @@ class SoalsRelationManager extends RelationManager
                     ->color(color: Color::Blue)
                     ->url(fn ($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Lihat Gambar'),
+                    ->formatStateUsing(fn () => 'Lihat Gambar')
+                    ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
                     ->url(fn ($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Putar Audio'),
+                    ->formatStateUsing(fn () => 'Putar Audio')
+                    ->width('150px')
             ])
             ->filters([
                 //

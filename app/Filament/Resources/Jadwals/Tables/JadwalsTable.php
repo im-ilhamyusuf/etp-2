@@ -17,23 +17,31 @@ class JadwalsTable
         return $table
             ->columns([
                 TextColumn::make('mulai')
-                    ->dateTime()
-                    ->sortable(),
+                    ->dateTime(),
                 TextColumn::make('tutup')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('kuota')
-                    ->numeric()
-                    ->sortable(),
+                    ->dateTime(),
                 TextColumn::make('biaya_1')
                     ->numeric()
-                    ->sortable(),
+                    ->prefix('Rp. ')
+                    ->width('150px'),
                 TextColumn::make('biaya_2')
                     ->numeric()
-                    ->sortable(),
+                    ->prefix('Rp. ')
+                    ->width('150px'),
                 IconColumn::make('status')
                     ->boolean()
+                    ->width('100px'),
+                TextColumn::make('kuota')
+                    ->numeric()
+                    ->width('100px'),
+                TextColumn::make('jumlah_peserta')
+                    ->numeric()
+                    ->width('150px'),
             ])
+            ->modifyQueryUsing(fn ($query) => 
+                $query->orderByRaw('tutup > NOW() DESC')
+                    ->orderBy('mulai', 'asc')
+            )
             ->filters([
                 //
             ])
