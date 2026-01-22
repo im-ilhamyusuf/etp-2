@@ -27,8 +27,9 @@ class PesertaPanelProvider extends PanelProvider
             ->id('peserta')
             ->path('peserta')
             ->login()
+            ->spa()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Peserta/Resources'), for: 'App\Filament\Peserta\Resources')
             ->discoverPages(in: app_path('Filament/Peserta/Pages'), for: 'App\Filament\Peserta\Pages')

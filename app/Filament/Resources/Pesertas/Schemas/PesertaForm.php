@@ -25,7 +25,7 @@ class PesertaForm
                     ->schema([
                         Select::make('user_id')
                             ->label("Akun user")
-                            ->options(User::peserta()->pluck('name', 'id'))
+                            ->options(User::user()->pluck('name', 'id'))
                             ->searchable(),
                         TextInput::make('no_peserta')
                             ->disabled()

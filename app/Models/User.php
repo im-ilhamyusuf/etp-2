@@ -48,12 +48,12 @@ class User extends Authenticatable
         ];
     }
 
-    public function biodata()
+    public function peserta()
     {
-        return $this->hasOne(Biodata::class);
+        return $this->hasOne(Peserta::class);
     }
 
-    public function scopePeserta($query)
+    public function scopeUser($query)
     {
         return $query->where('role', 'user');
     }

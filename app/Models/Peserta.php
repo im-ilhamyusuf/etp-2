@@ -29,7 +29,7 @@ class Peserta extends Model
 
     protected static function booted()
     {
-        static::creating(function ($model) 
+        static::creating(function ($model)
         {
             if($model->no_peserta) return;
 
