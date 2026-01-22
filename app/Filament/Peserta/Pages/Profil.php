@@ -11,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -161,12 +162,10 @@ class Profil extends Page implements HasSchemas
                                     ->label("NIDN")
                                     ->belowContent("Isi jika pekerjaan Dosen"),
                             ]),
-
-                        Action::make('save')
-                            ->label('Simpan Perubahan')
-                            ->color('primary')
-                            ->requiresConfirmation()
-                            ->action(fn () => $this->save()),
+                    ])
+                    ->columnOrder([
+                        'default' => 2,
+                        'lg' => 1
                     ]),
 
                     Section::make("Pas Foto")
@@ -178,6 +177,22 @@ class Profil extends Page implements HasSchemas
                                 ->imageCropAspectRatio('2:3')
                                 ->disk('public')
                                 ->directory('peserta')
+                        ])
+                        ->columnOrder([
+                            'default' => 1,
+                            'lg' => 2
+                        ]),
+
+                    Grid::make(1)
+                        ->schema([
+                            Action::make('save')
+                                    ->label('Simpan Perubahan')
+                                    ->color('primary')
+                                    ->requiresConfirmation()
+                                    ->action(fn () => $this->save()),
+                        ])
+                        ->columnOrder([
+                            'default' => 3
                         ])
             ]);
     }
