@@ -73,7 +73,6 @@ class Profil extends Page implements HasSchemas
                     ->schema([
                         Section::make('Akun')
                             ->icon(Heroicon::OutlinedUserCircle)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('peserta.no_peserta')
@@ -86,12 +85,11 @@ class Profil extends Page implements HasSchemas
                                     ->required(),
                                 TextInput::make('user.password')
                                     ->password()
-                                    ->dehydrated(fn ($state) => filled($state)),
+                                    ->dehydrated(fn($state) => filled($state)),
                             ]),
 
                         Section::make('Biodata')
                             ->icon(Heroicon::OutlinedIdentification)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('peserta.nik')
@@ -119,7 +117,8 @@ class Profil extends Page implements HasSchemas
                                     ->options(['WNI' => 'WNI', 'WNA' => 'WNA'])
                                     ->required()
                                     ->searchable(),
-                                TextInput::make('peserta.bahasa'),
+                                TextInput::make('peserta.bahasa')
+                                    ->required(),
                                 TextInput::make('peserta.no_hp')
                                     ->required(),
                                 Textarea::make('peserta.alamat')
@@ -129,7 +128,6 @@ class Profil extends Page implements HasSchemas
 
                         Section::make('Pendidikan')
                             ->icon(Heroicon::OutlinedAcademicCap)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 Select::make('peserta.pendidikan_terakhir')
@@ -145,16 +143,18 @@ class Profil extends Page implements HasSchemas
                                     ])
                                     ->required()
                                     ->searchable(),
-                                TextInput::make('peserta.tahun_lulus'),
+                                TextInput::make('peserta.tahun_lulus')
+                                    ->required(),
                             ]),
 
                         Section::make('Pekerjaan')
                             ->icon(Heroicon::OutlinedBriefcase)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
-                                TextInput::make('peserta.pekerjaan'),
-                                TextInput::make('peserta.instansi'),
+                                TextInput::make('peserta.pekerjaan')
+                                    ->required(),
+                                TextInput::make('peserta.instansi')
+                                    ->required(),
                                 TextInput::make('peserta.nim')
                                     ->label("NIM")
                                     ->belowContent(components: "Isi jika pekerjaan Mahasiswa"),
@@ -168,32 +168,32 @@ class Profil extends Page implements HasSchemas
                         'lg' => 1
                     ]),
 
-                    Section::make("Pas Foto")
-                        ->icon(Heroicon::OutlinedPhoto)
-                        ->schema([
-                            FileUpload::make('peserta.foto')
-                                ->image()
-                                ->imageEditor()
-                                ->imageCropAspectRatio('2:3')
-                                ->disk('public')
-                                ->directory('peserta')
-                        ])
-                        ->columnOrder([
-                            'default' => 1,
-                            'lg' => 2
-                        ]),
+                Section::make("Pas Foto")
+                    ->icon(Heroicon::OutlinedPhoto)
+                    ->schema([
+                        FileUpload::make('peserta.foto')
+                            ->image()
+                            ->imageEditor()
+                            ->imageCropAspectRatio('2:3')
+                            ->disk('public')
+                            ->directory('peserta')
+                    ])
+                    ->columnOrder([
+                        'default' => 1,
+                        'lg' => 2
+                    ]),
 
-                    Grid::make(1)
-                        ->schema([
-                            Action::make('save')
-                                    ->label('Simpan Perubahan')
-                                    ->color('primary')
-                                    ->requiresConfirmation()
-                                    ->action(fn () => $this->save()),
-                        ])
-                        ->columnOrder([
-                            'default' => 3
-                        ])
+                Grid::make(1)
+                    ->schema([
+                        Action::make('save')
+                            ->label('Simpan Perubahan')
+                            ->color('primary')
+                            ->requiresConfirmation()
+                            ->action(fn() => $this->save()),
+                    ])
+                    ->columnOrder([
+                        'default' => 3
+                    ])
             ]);
     }
 

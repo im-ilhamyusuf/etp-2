@@ -24,7 +24,6 @@ class PesertaForm
                     ->schema([
                         Section::make('Akun')
                             ->icon(Heroicon::OutlinedUserCircle)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 Select::make('user_id')
@@ -39,7 +38,6 @@ class PesertaForm
 
                         Section::make('Biodata')
                             ->icon(Heroicon::OutlinedIdentification)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('nik')
@@ -77,7 +75,6 @@ class PesertaForm
 
                         Section::make('Pendidikan')
                             ->icon(Heroicon::OutlinedAcademicCap)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 Select::make('pendidikan_terakhir')
@@ -98,7 +95,6 @@ class PesertaForm
 
                         Section::make('Pekerjaan')
                             ->icon(Heroicon::OutlinedBriefcase)
-                            ->collapsed(false)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('pekerjaan'),
@@ -116,20 +112,20 @@ class PesertaForm
                         'lg' => 1
                     ]),
 
-                    Section::make("Pas Foto")
-                        ->icon(Heroicon::OutlinedPhoto)
-                        ->schema([
-                            FileUpload::make('foto')
-                                ->image()
-                                ->imageEditor()
-                                ->imageCropAspectRatio('2:3')
-                                ->disk('public')
-                                ->directory('peserta')
-                        ])
-                        ->columnOrder([
-                            'default' => 1,
-                            'lg' => 2
-                        ]),
+                Section::make("Pas Foto")
+                    ->icon(Heroicon::OutlinedPhoto)
+                    ->schema([
+                        FileUpload::make('foto')
+                            ->image()
+                            ->imageEditor()
+                            ->imageCropAspectRatio('2:3')
+                            ->disk('public')
+                            ->directory('peserta')
+                    ])
+                    ->columnOrder([
+                        'default' => 1,
+                        'lg' => 2
+                    ]),
             ])
             ->columns(3);
     }
