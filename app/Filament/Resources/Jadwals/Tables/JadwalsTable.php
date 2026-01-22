@@ -40,7 +40,7 @@ class JadwalsTable
             ])
             ->modifyQueryUsing(fn ($query) => 
                 $query->orderByRaw('tutup > NOW() DESC')
-                    ->orderBy('mulai', 'asc')
+                    ->orderBy('mulai', 'desc')
             )
             ->filters([
                 //
