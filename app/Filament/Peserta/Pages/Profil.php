@@ -157,7 +157,7 @@ class Profil extends Page implements HasSchemas
                                 TextInput::make('peserta.instansi'),
                                 TextInput::make('peserta.nim')
                                     ->label("NIM")
-                                    ->belowContent(components: "Isi jika pekerjaanmu Mahasiswa"),
+                                    ->belowContent(components: "Isi jika pekerjaan Mahasiswa"),
                                 TextInput::make('peserta.nidn')
                                     ->label("NIDN")
                                     ->belowContent("Isi jika pekerjaan Dosen"),
