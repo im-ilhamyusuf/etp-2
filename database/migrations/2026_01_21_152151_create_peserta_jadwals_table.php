@@ -16,8 +16,7 @@ return new class extends Migration
             $table->foreignId('peserta_id')->constrained()->cascadeOnDelete();
             $table->foreignId('jadwal_id')->constrained()->cascadeOnDelete();
             $table->string('bukti_bayar')->nullable();
-            $table->dateTime('ajukan_bukti_bayar')->nullable();
-            $table->dateTime('validasi_bukti_bayar')->nullable();
+            $table->dateTime('validasi')->nullable();
             $table->integer('sesi_soal')->default(0);
             $table->dateTime('batas_sesi')->nullable();
             $table->integer('poin_a')->default(0);

@@ -6,6 +6,7 @@ use App\Filament\Resources\Jadwals\Pages\CreateJadwal;
 use App\Filament\Resources\Jadwals\Pages\EditJadwal;
 use App\Filament\Resources\Jadwals\Pages\ListJadwals;
 use App\Filament\Resources\Jadwals\Pages\ViewJadwal;
+use App\Filament\Resources\Jadwals\RelationManagers\PesertaRelationManager;
 use App\Filament\Resources\Jadwals\Schemas\JadwalForm;
 use App\Filament\Resources\Jadwals\Schemas\JadwalInfolist;
 use App\Filament\Resources\Jadwals\Tables\JadwalsTable;
@@ -47,7 +48,7 @@ class JadwalResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PesertaRelationManager::class
         ];
     }
 

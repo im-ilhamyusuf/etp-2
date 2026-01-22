@@ -10,8 +10,7 @@ class PesertaJadwal extends Model
         'peserta_id',
         'jadwal_id',
         'bukti_bayar',
-        'ajukan_bukti_bayar',
-        'validasi_bukti_bayar',
+        'validasi',
         'sesi_soal',
         'batas_sesi',
     ];
