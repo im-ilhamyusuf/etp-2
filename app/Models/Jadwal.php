@@ -30,4 +30,9 @@ class Jadwal extends Model
     {
         return $query->where('tutup', '>=', now());
     }
+
+    public function peserta()
+    {
+        return $this->hasMany(PesertaJadwal::class);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Peserta\Widgets\JadwalAktifWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -38,8 +39,7 @@ class PesertaPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Peserta/Widgets'), for: 'App\Filament\Peserta\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                JadwalAktifWidget::class
             ])
             ->middleware([
                 EncryptCookies::class,

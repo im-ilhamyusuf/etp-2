@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('peserta_jadwals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('peserta_id')->constrained()->cascadeOnDelete();
-            $table->string('no_peserta');
             $table->foreignId('jadwal_id')->constrained()->cascadeOnDelete();
             $table->string('bukti_bayar')->nullable();
             $table->dateTime('ajukan_bukti_bayar')->nullable();
