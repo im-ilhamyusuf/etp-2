@@ -41,7 +41,6 @@ class KamusNilaisTable
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                DeleteBulkAction::make()
             ]);
     }
 }
