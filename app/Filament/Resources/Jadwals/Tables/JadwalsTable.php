@@ -36,9 +36,11 @@ class JadwalsTable
                     ->width('100px'),
                 TextColumn::make('jumlah_peserta')
                     ->numeric()
-                    ->width('150px'),
+                    ->width('150px')
+                    ->getStateUsing(fn($record) => $record->peserta?->count()),
             ])
-            ->modifyQueryUsing(fn ($query) => 
+            ->modifyQueryUsing(
+                fn($query) =>
                 $query->orderByRaw('tutup > NOW() DESC')
                     ->orderBy('mulai', 'desc')
             )

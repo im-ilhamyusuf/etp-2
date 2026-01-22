@@ -35,7 +35,8 @@ class JadwalInfolist
                         TextEntry::make('kuota')
                             ->numeric(),
                         TextEntry::make('jumlah_peserta')
-                            ->numeric(),
+                            ->numeric() 
+                            ->getStateUsing(fn($record) => $record->peserta?->count()),
                     ])
             ]);
     }
