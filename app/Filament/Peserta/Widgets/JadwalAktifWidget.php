@@ -36,7 +36,7 @@ class JadwalAktifWidget extends TableWidget
                     ->getStateUsing(fn($record) => auth()->user()->peserta?->status == 'mahasiswa' ? $record->biaya_1 : $record->biaya_2),
                 TextColumn::make('kuota'),
                 TextColumn::make('jumlah_peserta')
-                    ->getStateUsing(fn($record) => $record->peserta?->count()),
+                    ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
             ])
             ->filters([
                 //
