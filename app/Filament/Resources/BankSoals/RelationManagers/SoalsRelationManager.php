@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BankSoals\RelationManagers;
 
+use App\Filament\Imports\SoalImporter;
 use App\Filament\Resources\BankSoals\Pages\ViewBankSoal;
 use App\Models\SoalJawaban;
 use DB;
@@ -13,6 +14,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ImportAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -83,23 +85,25 @@ class SoalsRelationManager extends RelationManager
                 TextColumn::make('gambar')
                     ->label('Gambar')
                     ->color(color: Color::Blue)
-                    ->url(fn ($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
+                    ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Lihat Gambar')
+                    ->formatStateUsing(fn() => 'Lihat Gambar')
                     ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
-                    ->url(fn ($record) => $record->audio ? asset('storage/' . $record->audio) : null)
+                    ->url(fn($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Putar Audio')
+                    ->formatStateUsing(fn() => 'Putar Audio')
                     ->width('150px')
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                 CreateAction::make()
+                ImportAction::make()
+                    ->importer(SoalImporter::class),
+                CreateAction::make()
                     ->using(function (array $data, RelationManager $livewire) {
                         $soal = $livewire->getRelationship()->create([
                             'soal'   => $data['soal'],
