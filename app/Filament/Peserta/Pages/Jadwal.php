@@ -120,7 +120,7 @@ class Jadwal extends Page implements HasInfolists
                                             ),
                                         TextEntry::make('status_pembayaran')
                                             ->label('Status Pembayaran')
-                                            ->getStateUsing(fn() => $pesertaJadwal?->validasi ?? 'Menunggu Validasi')
+                                            ->getStateUsing(fn() => $pesertaJadwal?->validasi != null ? 'Tervalidasi' : 'Menunggu Validasi')
                                             ->badge()
                                             ->color(fn($state) => $pesertaJadwal?->validasi != null ? 'success' : 'danger'),
                                     ])
