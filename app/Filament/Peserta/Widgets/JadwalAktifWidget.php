@@ -68,7 +68,7 @@ class JadwalAktifWidget extends TableWidget
                             'bukti_bayar' => $data['bukti_bayar']
                         ]);
 
-                        auth()->user()->peserta->load('jadwal');
+                        auth()->user()->peserta->load('pesertaJadwal');
 
                         Notification::make()
                             ->success()

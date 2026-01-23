@@ -189,7 +189,20 @@ class Profil extends Page implements HasSchemas
                             ->label('Simpan Perubahan')
                             ->color('primary')
                             ->requiresConfirmation()
-                            ->action(fn() => $this->save()),
+                            ->action(function () {
+                                try {
+                                    $this->form->validate();
+                                } catch (\Illuminate\Validation\ValidationException $e) {
+                                    Notification::make()
+                                        ->title('Mohon lengkapi form')
+                                        ->body('Silakan isi semua field yang wajib diisi')
+                                        ->danger()
+                                        ->send();
+                                    return;
+                                }
+
+                                $this->save();
+                            })
                     ])
                     ->columnOrder([
                         'default' => 3

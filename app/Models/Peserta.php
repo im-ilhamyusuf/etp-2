@@ -47,9 +47,18 @@ class Peserta extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function jadwal()
+    public function pesertaJadwal()
     {
         return $this->hasMany(PesertaJadwal::class);
+    }
+
+    public function jadwalAktif()
+    {
+        return $this->pesertaJadwal()
+            ->whereHas('jadwal', function ($query) {
+                $query->where('tutup', '>=', now());
+            })
+            ->with('jadwal');
     }
 
     protected $appends = ['status'];

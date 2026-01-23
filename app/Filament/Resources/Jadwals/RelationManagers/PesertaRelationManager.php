@@ -25,7 +25,7 @@ use Illuminate\Support\HtmlString;
 
 class PesertaRelationManager extends RelationManager
 {
-    protected static string $relationship = 'peserta';
+    protected static string $relationship = 'pesertaJadwal';
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {

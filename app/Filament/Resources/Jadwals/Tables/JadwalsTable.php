@@ -37,7 +37,7 @@ class JadwalsTable
                 TextColumn::make('jumlah_peserta')
                     ->numeric()
                     ->width('150px')
-                    ->getStateUsing(fn($record) => $record->peserta?->count()),
+                    ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
             ])
             ->modifyQueryUsing(
                 fn($query) =>
