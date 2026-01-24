@@ -19,6 +19,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Collection;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Group;
@@ -170,6 +171,14 @@ class SoalsRelationManager extends RelationManager
             ])
             ->toolbarActions([
                 DeleteBulkAction::make()
+                    ->using(function ($records) {
+                        foreach ($records as $record) {
+                            $record->soalJawaban()->delete();
+                            $record->delete();
+                        }
+
+                        return $records;
+                    }),
             ]);
     }
 }

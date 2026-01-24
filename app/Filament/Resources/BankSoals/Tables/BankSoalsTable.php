@@ -25,9 +25,9 @@ class BankSoalsTable
                 TextColumn::make('jenis')
                     ->badge()
                     ->color(function ($record) {
-                        if( $record->jenis == 'listening' ) {
+                        if ($record->jenis == 'listening') {
                             return Color::Red;
-                        } else if( $record->jenis == 'reading' ) {
+                        } else if ($record->jenis == 'reading') {
                             return Color::Yellow;
                         } else {
                             return Color::Green;
@@ -37,21 +37,21 @@ class BankSoalsTable
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('jumlah_soal')
-                    ->getStateUsing(fn ($record) => $record->soal->count())
+                    ->getStateUsing(fn($record) => $record->soal->count())
                     ->width('150px'),
                 TextColumn::make('gambar')
                     ->label('Gambar')
                     ->color(Color::Blue)
-                    ->url(fn ($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
+                    ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Lihat Gambar')
+                    ->formatStateUsing(fn() => 'Lihat Gambar')
                     ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
-                    ->url(fn ($record) => $record->audio ? asset('storage/' . $record->audio) : null)
+                    ->url(fn($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn () => 'Putar Audio')
+                    ->formatStateUsing(fn() => 'Putar Audio')
                     ->width('150px'),
             ])
             ->defaultSort('jenis')
