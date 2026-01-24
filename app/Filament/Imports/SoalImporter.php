@@ -16,10 +16,6 @@ class SoalImporter extends Importer
     {
         return [
             ImportColumn::make('soal'),
-            ImportColumn::make('benar'),
-            ImportColumn::make('salah_1'),
-            ImportColumn::make('salah_2'),
-            ImportColumn::make('salah_3'),
         ];
     }
 
@@ -28,12 +24,17 @@ class SoalImporter extends Importer
         return new Soal();
     }
 
+    protected function beforeSave(): void
+    {
+        $this->record->bank_soal_id = $this->options['bank_soal_id'] ?? null;
+    }
+
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Impor soal selesai. ' . Number::format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' baris berhasil diimpor..';
+        $body = 'Impor soal selesai. ' . Number::format($import->successful_rows) . ' baris berhasil diimpor..';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' baris gagal diimpor.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' baris gagal diimpor.';
         }
 
         return $body;

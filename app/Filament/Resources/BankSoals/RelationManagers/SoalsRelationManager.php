@@ -102,7 +102,10 @@ class SoalsRelationManager extends RelationManager
             ])
             ->headerActions([
                 ImportAction::make()
-                    ->importer(SoalImporter::class),
+                    ->importer(SoalImporter::class)
+                    ->options([
+                        'bank_soal_id' => $this->getOwnerRecord()->id,
+                    ]),
                 CreateAction::make()
                     ->using(function (array $data, RelationManager $livewire) {
                         $soal = $livewire->getRelationship()->create([
@@ -164,6 +167,9 @@ class SoalsRelationManager extends RelationManager
 
                         return $record;
                     }),
+            ])
+            ->toolbarActions([
+                DeleteBulkAction::make()
             ]);
     }
 }
