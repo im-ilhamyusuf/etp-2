@@ -61,7 +61,8 @@ class BankSoalsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->visible(fn($record) => $record->soal->count() == 0),
             ]);
     }
 }
