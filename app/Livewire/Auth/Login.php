@@ -27,13 +27,7 @@ class Login extends Component
 
         request()->session()->regenerate();
 
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
-            return redirect()->intended('/admin');
-        }
-
-        return redirect()->intended('/peserta');
+        return redirect()->route('after.login');
     }
 
     public function render()

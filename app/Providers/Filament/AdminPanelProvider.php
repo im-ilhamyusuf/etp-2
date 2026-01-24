@@ -27,7 +27,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(false)
+            ->authGuard('web')
             ->databaseNotifications()
             ->spa()
             ->colors([
@@ -58,6 +59,8 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                'auth',
+                'role:admin'
             ])
             ->authMiddleware([
                 Authenticate::class,
