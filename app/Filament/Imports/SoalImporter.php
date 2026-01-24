@@ -29,6 +29,27 @@ class SoalImporter extends Importer
         $this->record->bank_soal_id = $this->options['bank_soal_id'] ?? null;
     }
 
+    protected function afterSave(): void
+    {
+        if (! $this->record->exists) {
+            return;
+        }
+
+        // pastikan hanya create sekali
+        if ($this->record->soalJawaban()->exists()) {
+            return;
+        }
+
+        $row = $this->data;
+
+        $this->record->soalJawaban()->createMany([
+            ['jawaban' => $row['benar'] ?? null,   'benar' => true],
+            ['jawaban' => $row['salah_1'] ?? null, 'benar' => false],
+            ['jawaban' => $row['salah_2'] ?? null, 'benar' => false],
+            ['jawaban' => $row['salah_3'] ?? null, 'benar' => false],
+        ]);
+    }
+
     public static function getCompletedNotificationBody(Import $import): string
     {
         $body = 'Impor soal selesai. ' . Number::format($import->successful_rows) . ' baris berhasil diimpor..';
