@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\API\PesertaController;
+use App\Http\Controllers\API\UjianController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -17,5 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('peserta')->group(function () {
         Route::get('/profil', [PesertaController::class, 'profil']);
         Route::get('/jadwal-aktif', [PesertaController::class, 'jadwalAktif']);
+    });
+
+    // ujian
+    Route::prefix('ujian')->group(function () {
+        Route::post('mulai', [UjianController::class, 'mulai']);
     });
 });

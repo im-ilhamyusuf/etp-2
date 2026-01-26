@@ -52,6 +52,11 @@ class Peserta extends Model
         return $this->hasMany(PesertaJadwal::class);
     }
 
+    public function pesertaSoal()
+    {
+        return $this->hasMany(PesertaSoal::class);
+    }
+
     public function jadwalAktif()
     {
         return $this->pesertaJadwal()

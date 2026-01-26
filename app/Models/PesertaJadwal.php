@@ -13,6 +13,8 @@ class PesertaJadwal extends Model
         'validasi',
         'sesi_soal',
         'batas_sesi',
+        'mulai',
+        'selesai'
     ];
 
     public function peserta()

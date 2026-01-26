@@ -45,11 +45,12 @@ class PesertaController extends Controller
         if (! $user->peserta) {
             return response()->json([
                 'aktif' => false,
-                'message' => 'Peserta belum terdaftar'
+                'message' => 'Peserta belum terdaftar',
             ]);
         }
 
         $now = now();
+
         $pesertaJadwal = $user->peserta
             ->pesertaJadwal()
             ->whereNotNull('validasi')
@@ -61,9 +62,23 @@ class PesertaController extends Controller
             ->with('jadwal')
             ->first();
 
+        if (! $pesertaJadwal) {
+            return response()->json([
+                'aktif' => false,
+            ]);
+        }
+
         return response()->json([
-            'aktif' => (bool) $pesertaJadwal,
-            'jadwal' => $pesertaJadwal?->jadwal->only('id', 'mulai', 'tutup'),
+            'aktif'          => true,
+            'sudah_dimulai'  => ! is_null($pesertaJadwal->mulai),
+            'sesi'           => $pesertaJadwal->mulai
+                ? $pesertaJadwal->sesi_soal
+                : null,
+            'jadwal'         => $pesertaJadwal->jadwal->only(
+                'id',
+                'mulai',
+                'tutup'
+            ),
         ]);
     }
 }
