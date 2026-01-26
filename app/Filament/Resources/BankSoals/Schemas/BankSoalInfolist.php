@@ -16,6 +16,10 @@ class BankSoalInfolist
         return $schema
             ->components([
                 Section::make("Detail Bank Soal")
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                    ])
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         TextEntry::make('jenis')
@@ -23,21 +27,20 @@ class BankSoalInfolist
                         TextEntry::make('nama')
                             ->columnSpan(2),
                         TextEntry::make('jumlah_soal')
-                            ->getStateUsing(fn ($record) => $record->soal()->count()),
+                            ->getStateUsing(fn($record) => $record->soal()->count()),
                         TextEntry::make('gambar')
                             ->label('Gambar')
                             ->color(Color::Blue)
-                            ->url(fn ($record) => asset('storage/' . $record->gambar))
+                            ->url(fn($record) => asset('storage/' . $record->gambar))
                             ->openUrlInNewTab()
-                            ->formatStateUsing(fn () => 'Lihat Gambar'),
+                            ->formatStateUsing(fn() => 'Lihat Gambar'),
                         TextEntry::make('audio')
                             ->label('Audio')
                             ->color(Color::Blue)
-                            ->url(fn ($record) => asset('storage/' . $record->audio))
+                            ->url(fn($record) => asset('storage/' . $record->audio))
                             ->openUrlInNewTab()
-                            ->formatStateUsing(fn () => 'Putar Audio'),
+                            ->formatStateUsing(fn() => 'Putar Audio'),
                     ])
-                    ->columns(6)
             ])
             ->columns(1);
     }

@@ -27,7 +27,7 @@ class BankSoalsTable
                     ->color(function ($record) {
                         if ($record->jenis == 'listening') {
                             return Color::Red;
-                        } else if ($record->jenis == 'reading') {
+                        } else if ($record->jenis == 'structure') {
                             return Color::Yellow;
                         } else {
                             return Color::Green;
