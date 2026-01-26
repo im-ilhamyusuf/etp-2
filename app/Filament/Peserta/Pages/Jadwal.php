@@ -15,7 +15,6 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\EmptyState;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;

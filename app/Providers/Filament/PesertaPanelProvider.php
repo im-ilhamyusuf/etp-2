@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Peserta\Widgets\JadwalAktifWidget;
+use App\Filament\Peserta\Widgets\LengkapiProfil;
 use App\Filament\Peserta\Widgets\RekapWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -41,6 +42,7 @@ class PesertaPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Peserta/Widgets'), for: 'App\Filament\Peserta\Widgets')
             ->widgets([
+                LengkapiProfil::class,
                 RekapWidget::class,
                 JadwalAktifWidget::class
             ])

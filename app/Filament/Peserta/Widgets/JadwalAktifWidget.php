@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class JadwalAktifWidget extends TableWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
     protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
@@ -49,12 +49,21 @@ class JadwalAktifWidget extends TableWidget
                     ->label('Ambil Tes')
                     ->icon(Heroicon::ChevronDoubleRight)
                     ->visible(
-                        fn($record) => ($record->kuota > $record->peserta?->count()) && // kuota masih ada
-                            !PesertaJadwal::where('peserta_id', auth()->user()->peserta?->id)
+                        function ($record) {
+                            if (!auth()->user()->profilLengkap()) {
+                                return false;
+                            }
+
+                            $kuotaTes = $record->kuota > $record->peserta?->count();
+                            $peserta = auth()->user()->peserta;
+                            $sudahAdaTes = PesertaJadwal::where('peserta_id', $peserta->id)
                                 ->whereHas('jadwal', function ($query) {
-                                    $query->where('tutup', '>', Carbon::now()); // jadwal masih aktif
+                                    $query->where('tutup', '>', Carbon::now());
                                 })
-                                ->exists()
+                                ->exists();
+
+                            return $kuotaTes && !$sudahAdaTes;
+                        }
                     )
                     ->schema([
                         FileUpload::make('bukti_bayar')

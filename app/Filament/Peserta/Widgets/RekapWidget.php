@@ -7,7 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class RekapWidget extends StatsOverviewWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 2;
 
     public function getColumns(): int | array
     {

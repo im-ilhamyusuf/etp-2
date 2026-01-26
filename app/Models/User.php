@@ -56,6 +56,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Peserta::class);
     }
 
+    public function profilLengkap()
+    {
+        return filled($this->peserta->nik)
+            && filled($this->peserta->foto)
+            && filled($this->peserta->tempat_lahir)
+            && filled($this->peserta->tanggal_lahir)
+            && filled($this->peserta->pekerjaan)
+            && filled($this->peserta->alamat);
+    }
+
     public function scopeUser($query)
     {
         return $query->where('role', 'user');
