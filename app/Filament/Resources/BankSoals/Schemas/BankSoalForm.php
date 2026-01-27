@@ -15,12 +15,14 @@ class BankSoalForm
         return $schema
             ->components([
                 Section::make("Formulir Bank Soal")
-                    ->columns(2)
                     ->schema([
                         Select::make('jenis')
                             ->options(['listening' => 'Listening', 'reading' => 'Reading', 'structure' => 'Structure'])
                             ->required()
                             ->searchable(),
+                        TextInput::make('sesi')
+                            ->required()
+                            ->numeric(),
                         TextInput::make('nama')
                             ->required(),
                         FileUpload::make('gambar')
@@ -39,7 +41,6 @@ class BankSoalForm
                                 'audio/mp3',
                             ]),
                     ])
-            ])
-            ->columns(1);
+            ]);
     }
 }

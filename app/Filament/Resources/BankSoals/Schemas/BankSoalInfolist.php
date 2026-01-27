@@ -24,8 +24,8 @@ class BankSoalInfolist
                     ->schema([
                         TextEntry::make('jenis')
                             ->badge(),
-                        TextEntry::make('nama')
-                            ->columnSpan(2),
+                        TextEntry::make('sesi'),
+                        TextEntry::make('nama'),
                         TextEntry::make('jumlah_soal')
                             ->getStateUsing(fn($record) => $record->soal()->count()),
                         TextEntry::make('gambar')

@@ -69,9 +69,19 @@ class UjianController extends Controller
 
         // 5. simpan snapshot soal ke peserta_soals
         $peserta = $user->peserta;
+
+        if ($peserta->pesertaSoal()->where('jadwal_id', $pesertaJadwal->jadwal_id)->exists()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Soal ujian sudah disiapkan',
+                'mulai'   => $pesertaJadwal->mulai,
+            ]);
+        }
+
         foreach ($soals as $soal) {
             $peserta->pesertaSoal()->create([
-                'jadwal_id' => $pesertaJadwal->jadwal->id,
+                'jadwal_id' => $pesertaJadwal->jadwal_id,
+                'bank_soal_id' => $soal->bank_soal_id,
                 'soal_id' => $soal->id,
             ]);
         }
@@ -88,6 +98,101 @@ class UjianController extends Controller
             'mulai'       => $pesertaJadwal->mulai,
             'total_soal'  => $soals->count(),
             'sesi_soal'   => 1,
+        ]);
+    }
+
+    public function soal(Request $request)
+    {
+        $user = $request->user();
+        $peserta = $user->peserta;
+
+        if (! $peserta) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Peserta belum terdaftar',
+            ], 403);
+        }
+
+        // 1. ambil jadwal aktif
+        $pesertaJadwal = $peserta->pesertaJadwal()
+            ->whereNotNull('validasi')
+            ->whereNotNull('mulai')
+            ->whereNull('selesai')
+            ->first();
+
+        if (! $pesertaJadwal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian belum dimulai',
+            ], 403);
+        }
+
+        $sesi = $pesertaJadwal->sesi_soal;
+
+        // 2. ambil soal peserta berdasarkan sesi bank soal
+        $pesertaSoals = $peserta->pesertaSoal()
+            ->with([
+                'bankSoal',
+                'soal.soalJawaban'
+            ])
+            ->whereHas(
+                'bankSoal',
+                fn($q) =>
+                $q->where('sesi', $sesi)
+            )
+            ->orderBy('id')
+            ->get();
+
+        if ($pesertaSoals->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Soal sesi ini tidak tersedia',
+            ], 404);
+        }
+
+        $bankSoal = $pesertaSoals->first()->bankSoal;
+
+        // 3. response
+        return response()->json([
+            'success' => true,
+            'sesi' => $sesi,
+            'bank_soal' => [
+                'id'     => $bankSoal->id,
+                'nama'   => $bankSoal->nama,
+                'jenis'  => $bankSoal->jenis,
+                'gambar' => $bankSoal->gambar
+                    ? asset('storage/' . $bankSoal->gambar)
+                    : null,
+                'audio'  => $bankSoal->audio
+                    ? asset('storage/' . $bankSoal->audio)
+                    : null,
+            ],
+            'total_soal' => $pesertaSoals->count(),
+            'soals' => $pesertaSoals->map(function ($ps) {
+                return [
+                    'peserta_soal_id' => $ps->id,
+                    'soal_id' => $ps->soal->id,
+                    'soal_jawaban_id' => $ps->soal_jawaban_id,
+                    'soal' => $ps->soal->soal,
+
+                    'gambar' => $ps->soal->gambar
+                        ? asset('storage/' . $ps->soal->gambar)
+                        : null,
+
+                    'audio' => $ps->soal->audio
+                        ? asset('storage/' . $ps->soal->audio)
+                        : null,
+
+                    'jawaban' => ($ps->soal->soalJawaban ?? collect())
+                        ->shuffle()
+                        ->map(function ($jawaban) {
+                            return [
+                                'id' => $jawaban->id,
+                                'jawaban' => $jawaban->jawaban,
+                            ];
+                        }),
+                ];
+            }),
         ]);
     }
 }

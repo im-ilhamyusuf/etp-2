@@ -34,6 +34,7 @@ class BankSoalsTable
                         }
                     })
                     ->width('150px'),
+                TextColumn::make('sesi'),
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('jumlah_soal')
@@ -54,7 +55,7 @@ class BankSoalsTable
                     ->formatStateUsing(fn() => 'Putar Audio')
                     ->width('150px'),
             ])
-            ->defaultSort('jenis')
+            ->defaultSort('sesi')
             ->filters([
                 //
             ])

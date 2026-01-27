@@ -23,5 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // ujian
     Route::prefix('ujian')->group(function () {
         Route::post('mulai', [UjianController::class, 'mulai']);
+        Route::get('soal', [UjianController::class, 'soal']);
     });
 });

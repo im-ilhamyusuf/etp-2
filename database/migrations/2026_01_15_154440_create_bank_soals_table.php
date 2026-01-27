@@ -18,6 +18,7 @@ return new class extends Migration
                 "structure",
                 "reading",
             ]);
+            $table->integer('sesi');
             $table->string("nama");
             $table->string("gambar")->nullable();
             $table->string("audio")->nullable();
