@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessJawabanSesi;
+use App\Models\BankSoal;
 use App\Models\Soal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UjianController extends Controller
 {
@@ -41,7 +44,10 @@ class UjianController extends Controller
             ], 403);
         }
 
-        // 3. kalau sudah mulai (idempotent)
+        /**
+         * 🔒 GUARD UTAMA
+         * kalau ujian sudah dimulai → STOP TOTAL
+         */
         if ($pesertaJadwal->mulai) {
             return response()->json([
                 'success'   => true,
@@ -51,12 +57,12 @@ class UjianController extends Controller
             ]);
         }
 
-        // 4. ambil semua soal global (urut jenis + urutan)
+        // 3. ambil semua soal (sekali saja)
         $soals = Soal::join('bank_soals', 'bank_soals.id', '=', 'soals.bank_soal_id')
             ->orderByRaw("
-                FIELD(bank_soals.jenis, 'listening', 'structure', 'reading')
-            ")
-            ->orderBy('soals.id') // atau soals.urutan kalau ada
+            FIELD(bank_soals.jenis, 'listening', 'structure', 'reading')
+        ")
+            ->orderBy('soals.id')
             ->select('soals.*')
             ->get();
 
@@ -67,26 +73,18 @@ class UjianController extends Controller
             ], 500);
         }
 
-        // 5. simpan snapshot soal ke peserta_soals
+        // 4. snapshot soal (PASTI BARU, karena belum mulai)
         $peserta = $user->peserta;
-
-        if ($peserta->pesertaSoal()->where('jadwal_id', $pesertaJadwal->jadwal_id)->exists()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Soal ujian sudah disiapkan',
-                'mulai'   => $pesertaJadwal->mulai,
-            ]);
-        }
 
         foreach ($soals as $soal) {
             $peserta->pesertaSoal()->create([
-                'jadwal_id' => $pesertaJadwal->jadwal_id,
+                'jadwal_id'    => $pesertaJadwal->jadwal_id,
                 'bank_soal_id' => $soal->bank_soal_id,
-                'soal_id' => $soal->id,
+                'soal_id'      => $soal->id,
             ]);
         }
 
-        // 6. set mulai ujian
+        // 5. set mulai ujian (sekali saja)
         $pesertaJadwal->update([
             'mulai'     => $now,
             'sesi_soal' => 1,
@@ -97,7 +95,7 @@ class UjianController extends Controller
             'message'     => 'Ujian berhasil dimulai',
             'mulai'       => $pesertaJadwal->mulai,
             'total_soal'  => $soals->count(),
-            'sesi_soal'   => 1,
+            'sesi_soal'   => $pesertaJadwal->sesi_soal,
         ]);
     }
 
@@ -193,6 +191,90 @@ class UjianController extends Controller
                         }),
                 ];
             }),
+        ]);
+    }
+
+    public function submitJawaban(Request $request)
+    {
+        $request->validate([
+            'sesi' => 'required|integer',
+            'jawaban' => 'required|array',
+            'jawaban.*.peserta_soal_id' => 'required|integer',
+            'jawaban.*.soal_jawaban_id' => 'nullable|integer',
+        ]);
+
+        $user = $request->user();
+        $peserta = $user->peserta;
+
+        if (! $peserta) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Peserta tidak valid'
+            ], 403);
+        }
+
+        $pesertaJadwal = $peserta->pesertaJadwal()
+            ->whereNotNull('mulai')
+            ->whereNull('selesai')
+            ->first();
+
+        if (! $pesertaJadwal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian tidak aktif'
+            ], 403);
+        }
+
+        // 🔒 pastikan sesi request = sesi aktif
+        if ($request->sesi != $pesertaJadwal->sesi_soal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi tidak valid / sudah berpindah'
+            ], 409);
+        }
+
+        // ===============================
+        // 🔥 OPTIMISTIC SESSION TRANSITION
+        // ===============================
+        DB::transaction(function () use ($pesertaJadwal) {
+
+            $nextSesi = $pesertaJadwal->sesi_soal + 1;
+
+            $nextSesiExists = BankSoal::where('sesi', $nextSesi)->exists();
+
+            if ($nextSesiExists) {
+                $update = [
+                    'sesi_soal' => $nextSesi,
+                ];
+
+                if ($nextSesi === 4) {
+                    $update['batas_sesi'] = now()->addMinutes(25);
+                }
+
+                if ($nextSesi === 5) {
+                    $update['batas_sesi'] = now()->addMinutes(55);
+                }
+
+                $pesertaJadwal->update($update);
+            } else {
+                $pesertaJadwal->update([
+                    'selesai' => now(),
+                ]);
+            }
+        });
+
+        // 🚀 lempar proses BERAT ke job
+        ProcessJawabanSesi::dispatch(
+            pesertaId: $peserta->id,
+            jadwalId: $pesertaJadwal->jadwal_id,
+            sesi: $request->sesi,
+            jawaban: $request->jawaban
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jawaban diterima',
+            'next_sesi' => $pesertaJadwal->sesi_soal,
         ]);
     }
 }

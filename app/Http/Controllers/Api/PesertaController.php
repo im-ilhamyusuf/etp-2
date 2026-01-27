@@ -54,6 +54,7 @@ class PesertaController extends Controller
         $pesertaJadwal = $user->peserta
             ->pesertaJadwal()
             ->whereNotNull('validasi')
+            ->whereNull('selesai')
             ->whereHas('jadwal', function ($query) use ($now) {
                 $query
                     ->where('mulai', '<=', $now)
