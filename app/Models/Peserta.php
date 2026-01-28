@@ -27,6 +27,10 @@ class Peserta extends Model
         'alamat',
     ];
 
+    protected $casts = [
+        'tanggal_lahir' => 'datetime'
+    ];
+
     protected static function booted()
     {
         static::creating(function ($model) {

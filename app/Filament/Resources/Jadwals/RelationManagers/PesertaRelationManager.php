@@ -14,9 +14,11 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -45,6 +47,9 @@ class PesertaRelationManager extends RelationManager
                 TextColumn::make('no_peserta')
                     ->getStateUsing(fn($record) => $record->peserta?->no_peserta)
                     ->width('120px'),
+                ImageColumn::make('foto')
+                    ->disk('public')
+                    ->getStateUsing(fn($record) => $record->peserta?->foto),
                 TextColumn::make('nama')
                     ->getStateUsing(fn($record) => $record->peserta?->user?->name),
                 TextColumn::make('status')
@@ -74,7 +79,11 @@ class PesertaRelationManager extends RelationManager
                     ->badge()
                     ->color(fn($record) => $record->statusUjianColor),
                 TextColumn::make('sertifikat')
-                    ->dateTime(),
+                    ->url(fn($record) => route('ujian-sertifikat', ['peserta_jadwal_id' => $record->id]))
+                    ->openUrlInNewTab()
+                    ->state('Unduh')
+                    ->color(Color::Blue)
+                    ->icon(Heroicon::ArrowDownTray)
             ])
             ->filters([
                 //

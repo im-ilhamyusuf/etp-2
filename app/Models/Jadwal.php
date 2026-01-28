@@ -16,6 +16,7 @@ class Jadwal extends Model
     ];
 
     protected $casts = [
+        "mulai" => 'datetime',
         "tutup" => 'datetime'
     ];
 

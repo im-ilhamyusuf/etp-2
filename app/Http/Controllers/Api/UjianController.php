@@ -5,9 +5,15 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessJawabanSesi;
 use App\Models\BankSoal;
+use App\Models\Peserta;
+use App\Models\PesertaJadwal;
 use App\Models\Soal;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UjianController extends Controller
 {
@@ -276,5 +282,85 @@ class UjianController extends Controller
             'message' => 'Jawaban diterima',
             'next_sesi' => $pesertaJadwal->sesi_soal,
         ]);
+    }
+
+    public function sertifikat(Request $request)
+    {
+        $pesertaJadwalId = $request->peserta_jadwal_id;
+        $pesertaJadwal = PesertaJadwal::find($pesertaJadwalId);
+        $peserta = $pesertaJadwal->peserta;
+        $jadwal = $pesertaJadwal->jadwal;
+
+        Carbon::setLocale('en');
+
+        $data = [
+            'nama' => $peserta->user?->name,
+            'tempat_lahir' => $peserta->tempat_lahir,
+            'tanggal_lahir' => $peserta->tanggal_lahir->translatedFormat('F jS, Y'),
+            'nomor_tes' => $peserta->no_peserta . $jadwal->mulai->format('Ymd'),
+            'tanggal_tes' => $jadwal->mulai->translatedFormat('F jS, Y'),
+            'poin_a' => $pesertaJadwal->poin_a,
+            'poin_b' => $pesertaJadwal->poin_b,
+            'poin_c' => $pesertaJadwal->poin_c,
+            'nilai_akhir' => $pesertaJadwal->nilai_akhir,
+            'berlaku_sampai' => Carbon::parse($jadwal->mulai)->addYears(2)->format('F jS, Y'),
+            'foto' => public_path('storage/' . $peserta->foto)
+        ];
+
+        try {
+            // Siapkan informasi untuk API E-Sign
+            $information = [
+                ['Name' => $data['nama']],
+                ['Place & Date of Birth' => $data['tanggal_lahir'] . ', ' . $data['tempat_lahir']],
+                ['Test Number' => $data['nomor_tes']],
+                ['Listening Comprehension' => $data['poin_a']],
+                ['Structure and Written Expression' => $data['poin_b']],
+                ['Reading Comprehension' => $data['poin_c']],
+                ['Total Score' => $data['nilai_akhir']],
+                ['Valid Until' => $data['berlaku_sampai']],
+            ];
+
+            // Lakukan request POST ke API E-Sign
+            $responseDigitalSign = Http::post('https://api-esign.itg.ac.id/api/document', [
+                'subject' => 'Sertifikat ETP',
+                'signer' => "Reski Ramadhani, S.Pd., M.Hum.",
+                'information' => $information,
+            ]);
+
+            // Cek jika request berhasil
+            if ($responseDigitalSign->successful()) {
+                $jsonResponse = $responseDigitalSign->json();
+
+                if (isset($jsonResponse['data'])) {
+                    $urlDigitalSign = $jsonResponse['data']['url'];
+
+                    // Generate QR Code
+                    $data['ttd'] = base64_encode(QrCode::format('png')
+                        ->merge(public_path('images/logo_ttd.png'), 0.3, true)
+                        ->size(75)
+                        ->errorCorrection('H')
+                        ->generate($urlDigitalSign));
+
+                    // Generate PDF
+                    $pdf = Pdf::loadView('pdf.sertifikat', $data);
+                    $pdf->setPaper('A5', 'landscape');
+
+                    return $pdf->download('Certificate_ETP_' . $data['nomor_tes'] . '.pdf');
+                } else {
+                    // Jika 'data' tidak ada di respons JSON
+                    return response()->json(['error' => 'Data tidak ditemukan dalam respons JSON. ' . $responseDigitalSign->body()], 500);
+                }
+            } else {
+                // Tangani error dari API dengan status dan pesan yang lebih informatif
+                $errorMessage = $responseDigitalSign->status() . ': ' . $responseDigitalSign->body();
+                return response()->json(['error' => 'Gagal melakukan permintaan digital sign. ' . $errorMessage], $responseDigitalSign->status());
+            }
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            // Tangani error terkait permintaan HTTP
+            return response()->json(['error' => 'Permintaan gagal. ' . $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            // Tangani error umum lainnya
+            return response()->json(['error' => 'Terjadi kesalahan saat melakukan permintaan digital sign. ' . $e->getMessage()], 500);
+        }
     }
 }
