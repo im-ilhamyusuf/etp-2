@@ -3,19 +3,18 @@
 namespace App\Filament\Resources\Jadwals\RelationManagers;
 
 use App\Filament\Resources\Jadwals\Pages\ViewJadwal;
+use App\Models\PesertaJadwal;
 use Filament\Actions\Action;
-use Filament\Actions\AssociateAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -41,20 +40,18 @@ class PesertaRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('peserta_id')
+            ->recordTitleAttribute('no_peserta')
             ->columns([
                 TextColumn::make('no_peserta')
                     ->getStateUsing(fn($record) => $record->peserta?->no_peserta)
-                    ->width('150px'),
+                    ->width('120px'),
                 TextColumn::make('nama')
                     ->getStateUsing(fn($record) => $record->peserta?->user?->name),
                 TextColumn::make('status')
                     ->getStateUsing(fn($record) => $record->peserta?->status)
-                    ->formatStateUsing(fn($state) => ucwords($state))
-                    ->width('150px'),
+                    ->formatStateUsing(fn($state) => ucwords($state)),
                 TextColumn::make('jenis_kelamin')
-                    ->getStateUsing(fn($record) => $record->peserta?->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan')
-                    ->width('150px'),
+                    ->getStateUsing(fn($record) => $record->peserta?->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan'),
                 TextColumn::make('bukti_bayar')
                     ->state('Lihat')
                     ->color('primary')
@@ -69,34 +66,88 @@ class PesertaRelationManager extends RelationManager
                             ->modalFooterActions()
                             ->modalSubmitAction(false)
                             ->modalCancelAction(false)
-                    )
-                    ->width('150px'),
+                    ),
                 IconColumn::make('status_validasi')
                     ->getStateUsing(fn($record) => $record->validasi != null)
-                    ->boolean()
-                    ->width('150px'),
+                    ->boolean(),
+                TextColumn::make('status_ujian')
+                    ->badge()
+                    ->color(fn($record) => $record->statusUjianColor),
+                TextColumn::make('sertifikat')
+                    ->dateTime(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([])
             ->recordActions([
-                Action::make('validasi')
-                    ->icon(Heroicon::CheckBadge)
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function ($record) {
-                        $record->update([
-                            'validasi' => now(),
-                        ]);
+                ActionGroup::make([
+                    Action::make('validasi')
+                        ->icon(Heroicon::CheckBadge)
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function ($record) {
+                            $record->update([
+                                'validasi' => now(),
+                            ]);
 
-                        Notification::make()
-                            ->title('Berhasil')
-                            ->body('Pembayaran berhasil divalidasi.')
-                            ->success()
-                            ->send();
-                    }),
-                DeleteAction::make(),
+                            Notification::make()
+                                ->title('Berhasil')
+                                ->body('Pembayaran berhasil divalidasi.')
+                                ->success()
+                                ->send();
+                        }),
+                    Action::make('detailUjian')
+                        ->icon(Heroicon::NumberedList)
+                        ->modalWidth(Width::ExtraLarge)
+                        ->mountUsing(function (Schema $form, $record) {
+                            $form->fill([
+                                'mulai' => $record->mulai,
+                                'selesai' => $record->selesai,
+                                'sesi_soal' => $record->sesi_soal,
+                                'batas_sesi' => $record->batas_sesi,
+                                'poin_a' => $record->poin_a,
+                                'poin_b' => $record->poin_b,
+                                'poin_c' => $record->poin_c,
+                                'nilai_akhir' => $record->nilai_akhir,
+                            ]);
+                        })
+                        ->schema([
+                            Grid::make(1)
+                                ->inlineLabel()
+                                ->schema([
+                                    DateTimePicker::make('mulai')
+                                        ->label('Waktu mulai'),
+                                    DateTimePicker::make('selesai')
+                                        ->label('Waktu selesai'),
+                                    TextInput::make('sesi_soal')
+                                        ->numeric(),
+                                    DateTimePicker::make('batas_sesi'),
+                                    TextInput::make('poin_a')
+                                        ->label("Poin Listening")
+                                        ->numeric(),
+                                    TextInput::make('poin_b')
+                                        ->label("Poin Structure")
+                                        ->numeric(),
+                                    TextInput::make('poin_c')
+                                        ->label("Poin Reading")
+                                        ->numeric(),
+                                    TextInput::make('nilai_akhir')
+                                        ->numeric(),
+                                ])
+                        ])
+                        ->modalSubmitActionLabel("Simpan")
+                        ->action(function ($record, $data) {
+                            $record->update($data);
+
+                            Notification::make()
+                                ->title('Berhasil')
+                                ->body('Informasi ujian peserta berhasil diperbarui.')
+                                ->success()
+                                ->send();
+                        }),
+                    DeleteAction::make(),
+                ])
             ])
             ->toolbarActions([]);
     }

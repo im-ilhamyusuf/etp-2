@@ -14,7 +14,11 @@ class PesertaJadwal extends Model
         'sesi_soal',
         'batas_sesi',
         'mulai',
-        'selesai'
+        'selesai',
+        'poin_a',
+        'poin_b',
+        'poin_c',
+        'nilai_akhir',
     ];
 
     public function peserta()
@@ -25,5 +29,37 @@ class PesertaJadwal extends Model
     public function jadwal()
     {
         return $this->belongsTo(Jadwal::class);
+    }
+
+    protected $appends = ['statusUjian', 'statusUjianColor'];
+
+    public function getStatusUjianAttribute()
+    {
+        if ($this->mulai == null) {
+            return 'Belum Dimulai';
+        }
+
+        if ($this->mulai != null && $this->selesai == null) {
+            return 'Sedang Ujian';
+        }
+
+        if ($this->mulai != null && $this->selesai != null) {
+            return 'Sudah Selesai';
+        }
+    }
+
+    public function getStatusUjianColorAttribute()
+    {
+        if ($this->mulai == null) {
+            return 'danger';
+        }
+
+        if ($this->mulai != null && $this->selesai == null) {
+            return 'warning';
+        }
+
+        if ($this->mulai != null && $this->selesai != null) {
+            return 'success';
+        }
     }
 }
