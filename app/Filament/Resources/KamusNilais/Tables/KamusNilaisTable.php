@@ -20,6 +20,7 @@ class KamusNilaisTable
             ->columns([
                 TextColumn::make('jumlah_benar')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('listening')
                     ->numeric(),

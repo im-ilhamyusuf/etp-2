@@ -78,7 +78,6 @@ class ProcessJawabanSesi implements ShouldQueue
             // 5. update database
             PesertaJadwal::where('peserta_id', $this->pesertaId)
                 ->where('jadwal_id', $this->jadwalId)
-                ->whereNull('selesai')
                 ->update([
                     'poin_a' => $nilaiListening,
                     'poin_b' => $nilaiStructure,
