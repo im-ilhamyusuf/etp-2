@@ -345,7 +345,7 @@ class UjianController extends Controller
                     $pdf = Pdf::loadView('pdf.sertifikat', $data);
                     $pdf->setPaper('A5', 'landscape');
 
-                    return $pdf->download('Certificate_ETP_' . $data['nomor_tes'] . '.pdf');
+                    return $pdf->stream('Certificate_ETP_' . $data['nomor_tes'] . '.pdf');
                 } else {
                     // Jika 'data' tidak ada di respons JSON
                     return response()->json(['error' => 'Data tidak ditemukan dalam respons JSON. ' . $responseDigitalSign->body()], 500);
