@@ -133,6 +133,7 @@ class PesertaRelationManager extends RelationManager
                                         ->label("Poin Reading")
                                         ->numeric(),
                                     TextInput::make('nilai_akhir')
+                                        ->label("Nilai Akhir")
                                         ->numeric(),
                                 ])
                         ])
