@@ -16,19 +16,19 @@ class KamusNilaiForm
                 Section::make("Formulir Kamus Nilai")
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
-                    TextInput::make('jumlah_benar')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('listening')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('reading')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('structure')
-                        ->required()
-                        ->numeric(),
-                ])
+                        TextInput::make('jumlah_benar')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('listening')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('structure')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('reading')
+                            ->required()
+                            ->numeric(),
+                    ])
             ]);
     }
 }

@@ -23,9 +23,9 @@ class KamusNilaisTable
                     ->sortable(),
                 TextColumn::make('listening')
                     ->numeric(),
-                TextColumn::make('reading')
-                    ->numeric(),
                 TextColumn::make('structure')
+                    ->numeric(),
+                TextColumn::make('reading')
                     ->numeric(),
             ])
             ->defaultSort('jumlah_benar')
@@ -40,7 +40,6 @@ class KamusNilaisTable
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
-            ]);
+            ->toolbarActions([]);
     }
 }

@@ -23,11 +23,11 @@ class KamusNilaiImporter extends Importer
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'integer']),
-            ImportColumn::make('reading')
+            ImportColumn::make('structure')
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'integer']),
-            ImportColumn::make('structure')
+            ImportColumn::make('reading')
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'integer']),
