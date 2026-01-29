@@ -39,9 +39,11 @@ class Riwayat extends Page implements HasTable
     {
         return [
             TextColumn::make('jadwal.mulai')
-                ->label("Jadwal Mulai"),
+                ->label("Jadwal Mulai")
+                ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
             TextColumn::make('jadwal.tutup')
-                ->label("Jadwal Tutup"),
+                ->label("Jadwal Tutup")
+                ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
             TextColumn::make('jadwal.bukti_bayar')
                 ->label("Bukti Pembayaran")
                 ->state("Lihat")

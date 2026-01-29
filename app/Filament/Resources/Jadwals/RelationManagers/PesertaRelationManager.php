@@ -81,11 +81,16 @@ class PesertaRelationManager extends RelationManager
                     ->badge()
                     ->color(fn($record) => $record->statusUjianColor),
                 TextColumn::make('sertifikat')
-                    ->url(fn($record) => route('ujian-sertifikat', ['peserta_jadwal_id' => $record->id]))
-                    ->openUrlInNewTab()
-                    ->state('Unduh')
+                    ->label('Sertifikat')
+                    ->state(fn($record) => filled($record->selesai) ? 'Unduh' : '')
+                    ->icon(fn($record) => filled($record->selesai) ? Heroicon::ArrowDownTray : null)
                     ->color(Color::Blue)
-                    ->icon(Heroicon::ArrowDownTray)
+                    ->url(
+                        fn($record) => filled($record->selesai)
+                            ? route('ujian-sertifikat', ['peserta_jadwal_id' => $record->id])
+                            : null
+                    )
+                    ->openUrlInNewTab()
             ])
             ->filters([
                 //

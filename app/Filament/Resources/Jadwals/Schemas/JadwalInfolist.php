@@ -20,9 +20,9 @@ class JadwalInfolist
                     ->columns(4)
                     ->schema([
                         TextEntry::make('mulai')
-                            ->dateTime(),
+                            ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                         TextEntry::make('tutup')
-                            ->dateTime(),
+                            ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                         IconEntry::make('status')
                             ->boolean()
                             ->columnSpan(2),

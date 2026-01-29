@@ -17,9 +17,9 @@ class JadwalsTable
         return $table
             ->columns([
                 TextColumn::make('mulai')
-                    ->dateTime(),
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('tutup')
-                    ->dateTime(),
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('biaya_1')
                     ->numeric()
                     ->prefix('Rp')

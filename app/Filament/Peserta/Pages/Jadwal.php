@@ -77,11 +77,11 @@ class Jadwal extends Page implements HasInfolists
                                             ->getStateUsing(fn() => $user->peserta?->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan'),
                                         TextEntry::make('jadwal_mulai')
                                             ->getStateUsing(fn() => $pesertaJadwal?->jadwal->mulai)
-                                            ->date('d F Y H:i')
+                                            ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i'))
                                             ->placeholder('-'),
                                         TextEntry::make('jadwal_tutup')
                                             ->getStateUsing(fn() => $pesertaJadwal?->jadwal->tutup)
-                                            ->date('d F Y H:i'),
+                                            ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                                         TextEntry::make('status_ujian')
                                             ->badge()
                                             ->getStateUsing(function () use ($pesertaJadwal) {

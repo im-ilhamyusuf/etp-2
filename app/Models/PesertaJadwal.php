@@ -21,6 +21,10 @@ class PesertaJadwal extends Model
         'nilai_akhir',
     ];
 
+    protected $casts = [
+        'selesai' => 'datetime'
+    ];
+
     public function peserta()
     {
         return $this->belongsTo(Peserta::class);

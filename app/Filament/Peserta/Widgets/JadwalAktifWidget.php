@@ -27,9 +27,11 @@ class JadwalAktifWidget extends TableWidget
             ->query(fn(): Builder => Jadwal::aktif())
             ->columns([
                 TextColumn::make('mulai')
-                    ->label("Jadwal Mulai"),
+                    ->label("Jadwal Mulai")
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('tutup')
-                    ->label("Jadwal Tutup"),
+                    ->label("Jadwal Tutup")
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('biaya')
                     ->numeric()
                     ->prefix('Rp')
