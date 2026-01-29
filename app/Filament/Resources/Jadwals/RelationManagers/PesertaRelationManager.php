@@ -3,16 +3,18 @@
 namespace App\Filament\Resources\Jadwals\RelationManagers;
 
 use App\Filament\Resources\Jadwals\Pages\ViewJadwal;
-use App\Models\PesertaJadwal;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
@@ -122,29 +124,52 @@ class PesertaRelationManager extends RelationManager
                             ]);
                         })
                         ->schema([
-                            Grid::make(1)
-                                ->inlineLabel()
-                                ->schema([
-                                    DateTimePicker::make('mulai')
-                                        ->label('Waktu mulai'),
-                                    DateTimePicker::make('selesai')
-                                        ->label('Waktu selesai'),
-                                    TextInput::make('sesi_soal')
-                                        ->numeric(),
-                                    DateTimePicker::make('batas_sesi'),
-                                    TextInput::make('poin_a')
-                                        ->label("Poin Listening")
-                                        ->numeric(),
-                                    TextInput::make('poin_b')
-                                        ->label("Poin Structure")
-                                        ->numeric(),
-                                    TextInput::make('poin_c')
-                                        ->label("Poin Reading")
-                                        ->numeric(),
-                                    TextInput::make('nilai_akhir')
-                                        ->label("Nilai Akhir")
-                                        ->numeric(),
+                            Flex::make([
+                                ImageEntry::make('peserta.foto')
+                                    ->disk('public')
+                                    ->hiddenLabel()
+                                    ->grow(false),
+                                Group::make([
+                                    Group::make([
+                                        TextEntry::make('peserta.no_peserta'),
+                                        TextEntry::make('peserta.user.name')
+                                            ->label("Nama"),
+                                    ])->columns(2),
+                                    Group::make([
+                                        TextEntry::make('peserta.jenis_kelamin')
+                                            ->formatStateUsing(fn($state) => match ($state) {
+                                                'L' => 'Laki-laki',
+                                                'P' => 'Perempuan',
+                                                default => '-',
+                                            }),
+                                        TextEntry::make('peserta.status')
+                                            ->formatStateUsing(fn($state) => ucwords($state)),
+                                    ])->columns(2)
                                 ])
+                            ]),
+
+                            Group::make([
+                                DateTimePicker::make('mulai')
+                                    ->label('Waktu mulai'),
+                                DateTimePicker::make('selesai')
+                                    ->label('Waktu selesai'),
+                                TextInput::make('sesi_soal')
+                                    ->numeric(),
+                                DateTimePicker::make('batas_sesi'),
+                                TextInput::make('poin_a')
+                                    ->label("Poin Listening")
+                                    ->numeric(),
+                                TextInput::make('poin_b')
+                                    ->label("Poin Structure")
+                                    ->numeric(),
+                                TextInput::make('poin_c')
+                                    ->label("Poin Reading")
+                                    ->numeric(),
+                                TextInput::make('nilai_akhir')
+                                    ->label("Nilai Akhir")
+                                    ->numeric(),
+                            ])
+                                ->inlineLabel()
                         ])
                         ->modalSubmitActionLabel("Simpan")
                         ->action(function ($record, $data) {
