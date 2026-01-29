@@ -9,7 +9,10 @@ class RekapWidget extends StatsOverviewWidget
 {
     public function getColumns(): int | array
     {
-        return 3;
+        return [
+            'default' => 2,
+            'xl' => 4
+        ];
     }
 
     protected function getStats(): array
@@ -22,6 +25,7 @@ class RekapWidget extends StatsOverviewWidget
                 ->count()),
             Stat::make("Jumlah Riyawat", auth()->user()->peserta?->pesertaJadwal()->count()),
             Stat::make("Jumlah Sertifikat", auth()->user()->peserta?->pesertaJadwal()->selesai()->count()),
+            Stat::make("Nilai Tertinggi", auth()->user()->peserta?->pesertaJadwal()->selesai()->max('nilai_akhir')),
         ];
     }
 }
