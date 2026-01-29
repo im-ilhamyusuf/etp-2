@@ -66,4 +66,9 @@ class PesertaJadwal extends Model
             return 'success';
         }
     }
+
+    public function scopeSelesai($query)
+    {
+        return $query->whereNotNull('selesai');
+    }
 }
