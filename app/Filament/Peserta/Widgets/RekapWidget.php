@@ -7,6 +7,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class RekapWidget extends StatsOverviewWidget
 {
+    protected static ?int $sort = 2;
+
     public function getColumns(): int | array
     {
         return [
@@ -25,7 +27,7 @@ class RekapWidget extends StatsOverviewWidget
                 ->count()),
             Stat::make("Jumlah Riyawat", auth()->user()->peserta?->pesertaJadwal()->count()),
             Stat::make("Jumlah Sertifikat", auth()->user()->peserta?->pesertaJadwal()->selesai()->count()),
-            Stat::make("Nilai Tertinggi", auth()->user()->peserta?->pesertaJadwal()->selesai()->max('nilai_akhir')),
+            Stat::make("Nilai Tertinggi", auth()->user()->peserta?->pesertaJadwal()->selesai()->max('nilai_akhir') ?? 0),
         ];
     }
 }
