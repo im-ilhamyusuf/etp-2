@@ -7,11 +7,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class RekapWidget extends StatsOverviewWidget
 {
-    protected static ?int $sort = 2;
-
     public function getColumns(): int | array
     {
-        return 2;
+        return 3;
     }
 
     protected function getStats(): array
@@ -22,7 +20,8 @@ class RekapWidget extends StatsOverviewWidget
             })
                 ->with('jadwal')
                 ->count()),
-            Stat::make("Total Riyawat", auth()->user()->peserta?->pesertaJadwal()->count()),
+            Stat::make("Jumlah Riyawat", auth()->user()->peserta?->pesertaJadwal()->count()),
+            Stat::make("Jumlah Sertifikat", auth()->user()->peserta?->pesertaJadwal()->selesai()->count()),
         ];
     }
 }
