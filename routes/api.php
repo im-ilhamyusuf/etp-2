@@ -25,5 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('mulai', [UjianController::class, 'mulai']);
         Route::get('soal', [UjianController::class, 'soal']);
         Route::post('submit-jawaban', [UjianController::class, 'submitJawaban']);
+        Route::post('ganti-sesi', [UjianController::class, 'gantiSesi']);
     });
 });

@@ -52,19 +52,32 @@ class JadwalAktifWidget extends TableWidget
                     ->icon(Heroicon::ChevronDoubleRight)
                     ->visible(
                         function ($record) {
-                            if (!auth()->user()->profilLengkap()) {
+                            // 1️⃣ profil wajib lengkap
+                            if (! auth()->user()->profilLengkap()) {
                                 return false;
                             }
 
-                            $kuotaTes = $record->kuota > $record->peserta?->count();
                             $peserta = auth()->user()->peserta;
-                            $sudahAdaTes = PesertaJadwal::where('peserta_id', $peserta->id)
-                                ->whereHas('jadwal', function ($query) {
-                                    $query->where('tutup', '>', Carbon::now());
-                                })
+
+                            // 2️⃣ kuota masih tersedia
+                            $jumlahPeserta = PesertaJadwal::where('jadwal_id', $record->id)->count();
+                            $kuotaMasihAda = $jumlahPeserta < $record->kuota;
+
+
+                            // 3️⃣ masih punya tes aktif (jadwal lain)
+                            $punyaTesAktif = PesertaJadwal::where('peserta_id', $peserta->id)
+                                ->whereHas('jadwal', fn($q) => $q->where('tutup', '>', now()))
+                                ->whereNull('selesai')
                                 ->exists();
 
-                            return $kuotaTes && !$sudahAdaTes;
+                            // 4️⃣ sudah pernah ambil jadwal INI (walau sudah selesai)
+                            $sudahAmbilJadwalIni = PesertaJadwal::where('peserta_id', $peserta->id)
+                                ->where('jadwal_id', $record->id)
+                                ->exists();
+
+                            return $kuotaMasihAda
+                                && ! $punyaTesAktif
+                                && ! $sudahAmbilJadwalIni;
                         }
                     )
                     ->schema([

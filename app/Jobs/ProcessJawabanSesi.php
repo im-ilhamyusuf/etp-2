@@ -22,35 +22,35 @@ class ProcessJawabanSesi implements ShouldQueue
     public function __construct(
         public int $pesertaId,
         public int $jadwalId,
-        public int $sesi,
-        public array $jawaban
+        public int $pesertaSoalId,
+        public ?int $soalJawabanId
     ) {}
+
 
     public function handle(): void
     {
         DB::transaction(function () {
-            // 1. simpan jawaban
-            foreach ($this->jawaban as $item) {
-                $benar = null;
+            // 1. simpan 1 jawaban
+            $benar = 0;
 
-                if (! empty($item['soal_jawaban_id'])) {
-                    $benar = SoalJawaban::where('id', $item['soal_jawaban_id'])
-                        ->value('benar');
-                }
-
-                PesertaSoal::where('id', $item['peserta_soal_id'])
-                    ->where('peserta_id', $this->pesertaId)
-                    ->update([
-                        'soal_jawaban_id' => $item['soal_jawaban_id'],
-                        'benar'           => $benar,
-                        'updated_at'      => now(),
-                    ]);
+            if ($this->soalJawabanId) {
+                $benar = (int) SoalJawaban::where('id', $this->soalJawabanId)
+                    ->value('benar');
             }
+
+            PesertaSoal::where('id', $this->pesertaSoalId)
+                ->where('peserta_id', $this->pesertaId)
+                ->update([
+                    'soal_jawaban_id' => $this->soalJawabanId,
+                    'benar'           => $benar,
+                    'updated_at'      => now(),
+                ]);
 
             // 2. hitung akumulasi nilai
             $rekap = PesertaSoal::query()
                 ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
                 ->where('peserta_soals.peserta_id', $this->pesertaId)
+                ->where('peserta_soals.jadwal_id', $this->jadwalId)
                 ->where('peserta_soals.benar', 1)
                 ->selectRaw('bank_soals.jenis, COUNT(*) as total')
                 ->groupBy('bank_soals.jenis')

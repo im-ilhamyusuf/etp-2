@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
             $table->foreignId('jadwal_id')->constrained('jadwals')->cascadeOnDelete();
             $table->foreignId('bank_soal_id')->constrained('bank_soals')->cascadeOnDelete();
+            $table->integer('no');
             $table->foreignId('soal_id')->constrained('soals')->cascadeOnDelete();
             $table->integer('soal_jawaban_id')->nullable();
             $table->boolean('benar')->nullable();

@@ -7,6 +7,7 @@ use App\Jobs\ProcessJawabanSesi;
 use App\Models\BankSoal;
 use App\Models\Peserta;
 use App\Models\PesertaJadwal;
+use App\Models\PesertaSoal;
 use App\Models\Soal;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -82,10 +83,11 @@ class UjianController extends Controller
         // 4. snapshot soal (PASTI BARU, karena belum mulai)
         $peserta = $user->peserta;
 
-        foreach ($soals as $soal) {
+        foreach ($soals as $index => $soal) {
             $peserta->pesertaSoal()->create([
                 'jadwal_id'    => $pesertaJadwal->jadwal_id,
                 'bank_soal_id' => $soal->bank_soal_id,
+                'no' => $index + 1,
                 'soal_id'      => $soal->id,
             ]);
         }
@@ -144,6 +146,7 @@ class UjianController extends Controller
                 fn($q) =>
                 $q->where('sesi', $sesi)
             )
+            ->where('jadwal_id', $pesertaJadwal->jadwal_id)
             ->orderBy('id')
             ->get();
 
@@ -171,13 +174,16 @@ class UjianController extends Controller
                     ? asset('storage/' . $bankSoal->audio)
                     : null,
             ],
+            'batas_sesi' => $pesertaJadwal->batas_sesi,
             'total_soal' => $pesertaSoals->count(),
             'soals' => $pesertaSoals->map(function ($ps) {
                 return [
                     'peserta_soal_id' => $ps->id,
                     'soal_id' => $ps->soal->id,
+                    'no' => $ps->no,
                     'soal_jawaban_id' => $ps->soal_jawaban_id,
                     'soal' => $ps->soal->soal,
+                    'sudah' => $ps->sudah,
 
                     'gambar' => $ps->soal->gambar
                         ? asset('storage/' . $ps->soal->gambar)
@@ -187,7 +193,7 @@ class UjianController extends Controller
                         ? asset('storage/' . $ps->soal->audio)
                         : null,
 
-                    'jawaban' => ($ps->soal->soalJawaban ?? collect())
+                    'daftar_jawaban' => ($ps->soal->soalJawaban ?? collect())
                         ->shuffle()
                         ->map(function ($jawaban) {
                             return [
@@ -204,13 +210,13 @@ class UjianController extends Controller
     {
         $request->validate([
             'sesi' => 'required|integer',
-            'jawaban' => 'required|array',
-            'jawaban.*.peserta_soal_id' => 'required|integer',
-            'jawaban.*.soal_jawaban_id' => 'nullable|integer',
+            'peserta_soal_id' => 'required|integer',
+            'soal_jawaban_id' => 'nullable|integer',
         ]);
 
         $user = $request->user();
         $peserta = $user->peserta;
+        $selesai = false;
 
         if (! $peserta) {
             return response()->json([
@@ -239,12 +245,146 @@ class UjianController extends Controller
             ], 409);
         }
 
-        // ===============================
-        // 🔥 OPTIMISTIC SESSION TRANSITION
-        // ===============================
-        DB::transaction(function () use ($pesertaJadwal) {
+        $bankSoalJenis = PesertaSoal::query()
+            ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
+            ->where('peserta_soals.id', $request->peserta_soal_id)
+            ->where('peserta_soals.peserta_id', $peserta->id)
+            ->value('bank_soals.jenis');
 
-            $nextSesi = $pesertaJadwal->sesi_soal + 1;
+        $isListening = $bankSoalJenis === 'listening';
+
+        if ($isListening) {
+            DB::transaction(function () use ($pesertaJadwal, $peserta, $request, &$selesai) {
+                $currentSesi = (int) $pesertaJadwal->sesi_soal;
+
+                // ambil soal yang sedang dijawab
+                $pesertaSoal = PesertaSoal::query()
+                    ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
+                    ->where('peserta_soals.id', $request->peserta_soal_id)
+                    ->where('peserta_soals.peserta_id', $peserta->id)
+                    ->where('bank_soals.sesi', $currentSesi)
+                    ->select('peserta_soals.no', 'peserta_soals.bank_soal_id')
+                    ->first();
+
+                // kalau soal tidak valid → STOP (tidak pindah sesi)
+                if (! $pesertaSoal) {
+                    return;
+                }
+
+                // ambil nomor soal TERAKHIR di sesi ini
+                $lastNoInSession = PesertaSoal::query()
+                    ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
+                    ->where('peserta_soals.peserta_id', $peserta->id)
+                    ->where('bank_soals.sesi', $currentSesi)
+                    ->max('peserta_soals.no');
+
+                // ===============================
+                // ❌ BUKAN SOAL TERAKHIR → STOP
+                // ===============================
+                if ((int) $pesertaSoal->no !== (int) $lastNoInSession) {
+                    return;
+                }
+
+                // ===============================
+                // ✅ SOAL TERAKHIR → PINDAH SESI
+                // ===============================
+                $nextSesi = $currentSesi + 1;
+
+                $nextSesiExists = BankSoal::where('sesi', $nextSesi)->exists();
+
+                if ($nextSesiExists) {
+                    $update = [
+                        'sesi_soal' => $nextSesi,
+                    ];
+
+                    if ($nextSesi === 4) {
+                        $update['batas_sesi'] = now()->addMinutes(25);
+                    }
+
+                    if ($nextSesi === 5) {
+                        $update['batas_sesi'] = now()->addMinutes(55);
+                    }
+
+                    $pesertaJadwal->update($update);
+                } else {
+                    // sesi terakhir → ujian selesai
+                    $pesertaJadwal->update([
+                        'selesai' => now(),
+                    ]);
+
+                    $selesai = true;
+                }
+            });
+        }
+
+        // 🚀 lempar proses BERAT ke job
+        ProcessJawabanSesi::dispatch(
+            pesertaId: $peserta->id,
+            jadwalId: $pesertaJadwal->jadwal_id,
+            pesertaSoalId: $request->peserta_soal_id,
+            soalJawabanId: $request->soal_jawaban_id
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jawaban diterima',
+            'selesai' => $selesai,
+            'sesi_berpindah' => $request->sesi != $pesertaJadwal->sesi_soal,
+            'current_sesi' => $pesertaJadwal->sesi_soal,
+        ]);
+    }
+
+    public function gantiSesi(Request $request)
+    {
+        $request->validate([
+            'sesi' => 'required|integer',
+        ]);
+
+        $user = $request->user();
+        $peserta = $user->peserta;
+        $selesai = false;
+
+        if (! $peserta) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Peserta tidak valid',
+            ], 403);
+        }
+
+        $pesertaJadwal = $peserta->pesertaJadwal()
+            ->whereNotNull('mulai')
+            ->whereNull('selesai')
+            ->first();
+
+        if (! $pesertaJadwal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian tidak aktif',
+            ], 403);
+        }
+
+        // 🔒 optimistic lock
+        if ((int) $request->sesi !== (int) $pesertaJadwal->sesi_soal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi tidak valid / sudah berpindah',
+            ], 409);
+        }
+
+        // 🔍 cek jenis sesi saat ini
+        $jenis = BankSoal::where('sesi', $pesertaJadwal->sesi_soal)
+            ->value('jenis');
+
+        if ($jenis === 'listening') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Listening tidak bisa ganti sesi manual',
+            ], 422);
+        }
+
+        DB::transaction(function () use ($pesertaJadwal, &$selesai) {
+            $currentSesi = (int) $pesertaJadwal->sesi_soal;
+            $nextSesi = $currentSesi + 1;
 
             $nextSesiExists = BankSoal::where('sesi', $nextSesi)->exists();
 
@@ -253,6 +393,7 @@ class UjianController extends Controller
                     'sesi_soal' => $nextSesi,
                 ];
 
+                // ⏱️ set batas waktu per sesi
                 if ($nextSesi === 4) {
                     $update['batas_sesi'] = now()->addMinutes(25);
                 }
@@ -266,23 +407,19 @@ class UjianController extends Controller
                 $pesertaJadwal->update([
                     'selesai' => now(),
                 ]);
+
+                $selesai = true;
             }
         });
 
-        // 🚀 lempar proses BERAT ke job
-        ProcessJawabanSesi::dispatch(
-            pesertaId: $peserta->id,
-            jadwalId: $pesertaJadwal->jadwal_id,
-            sesi: $request->sesi,
-            jawaban: $request->jawaban
-        );
-
         return response()->json([
             'success' => true,
-            'message' => 'Jawaban diterima',
-            'next_sesi' => $pesertaJadwal->sesi_soal,
+            'message' => 'Berhasil ganti sesi',
+            'selesai' => $selesai,
+            'current_sesi' => $pesertaJadwal->sesi_soal,
         ]);
     }
+
 
     public function sertifikat(Request $request)
     {

@@ -23,12 +23,14 @@ class PesertaController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'foto' => $peserta->foto
+                'photo' => $peserta->foto
                     ? Storage::disk('public')->url($peserta->foto)
                     : null,
 
-                'nama_lengkap' => $user->name,
+                'name' => $user->name,
+                'email' => $user->email,
                 'no_peserta'   => $peserta->no_peserta,
+                'roles' => $user->role,
 
                 'jenis_kelamin' => $peserta->jenis_kelamin === 'L'
                     ? 'Laki-laki'
@@ -57,7 +59,6 @@ class PesertaController extends Controller
             ->whereNull('selesai')
             ->whereHas('jadwal', function ($query) use ($now) {
                 $query
-                    ->where('mulai', '<=', $now)
                     ->where('tutup', '>=', $now);
             })
             ->with('jadwal')
@@ -69,17 +70,28 @@ class PesertaController extends Controller
             ]);
         }
 
+        $now = now();
+
+        $jadwal = $pesertaJadwal->jadwal;
+
+        $bisaDikerjakan = $now->between(
+            $jadwal->mulai,
+            $jadwal->tutup
+        );
+
         return response()->json([
-            'aktif'          => true,
+            'aktif' => true,
+            'bisa_dikerjakan' => $bisaDikerjakan,
+            'status_ujian' => $bisaDikerjakan ? 'Sudah Dimulai' : 'Belum Dimulai',
             'sudah_dimulai'  => ! is_null($pesertaJadwal->mulai),
-            'sesi'           => $pesertaJadwal->mulai
+            'sesi' => $pesertaJadwal->mulai
                 ? $pesertaJadwal->sesi_soal
                 : null,
-            'jadwal'         => $pesertaJadwal->jadwal->only(
-                'id',
-                'mulai',
-                'tutup'
-            ),
+            'jadwal' => [
+                'id' => $pesertaJadwal->jadwal->id,
+                'mulai' => $pesertaJadwal->jadwal->mulai->translatedFormat('j F Y H:i') . " WIB",
+                'tutup' => $pesertaJadwal->jadwal->tutup->translatedFormat('j F Y H:i') . " WIB",
+            ],
         ]);
     }
 }

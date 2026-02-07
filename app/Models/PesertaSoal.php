@@ -10,6 +10,7 @@ class PesertaSoal extends Model
         'peserta_id',
         'jadwal_id',
         'bank_soal_id',
+        'no',
         'soal_id',
         'soal_jawaban_id',
         'benar'
@@ -23,5 +24,12 @@ class PesertaSoal extends Model
     public function soal()
     {
         return $this->belongsTo(Soal::class);
+    }
+
+    protected $appends = ['sudah'];
+
+    public function getSudahAttribute()
+    {
+        return $this->created_at != $this->updated_at;
     }
 }

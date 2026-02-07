@@ -35,6 +35,7 @@ class Jadwal extends Page implements HasInfolists
         $pesertaJadwal = $user->peserta?->pesertaJadwal()->whereHas('jadwal', function ($query) {
             $query->where('tutup', '>=', now());
         })
+            ->whereNull('selesai')
             ->with('jadwal')
             ->first();
 
