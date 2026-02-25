@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->navigationGroups([
                 'Master',
+                'Short Course',
                 'Ujian'
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

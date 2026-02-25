@@ -33,13 +33,15 @@ class BankSoalInfolist
                             ->color(Color::Blue)
                             ->url(fn($record) => asset('storage/' . $record->gambar))
                             ->openUrlInNewTab()
-                            ->formatStateUsing(fn() => 'Lihat Gambar'),
+                            ->formatStateUsing(fn() => 'Buka')
+                            ->icon(Heroicon::Link),
                         TextEntry::make('audio')
                             ->label('Audio')
                             ->color(Color::Blue)
                             ->url(fn($record) => asset('storage/' . $record->audio))
                             ->openUrlInNewTab()
-                            ->formatStateUsing(fn() => 'Putar Audio'),
+                            ->formatStateUsing(fn() => 'Buka')
+                            ->icon(Heroicon::Link),
                     ])
             ])
             ->columns(1);

@@ -23,9 +23,9 @@ class MateriResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'judul';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Master';
+    protected static string|UnitEnum|null $navigationGroup = 'Short Course';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

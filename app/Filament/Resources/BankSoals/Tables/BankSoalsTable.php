@@ -9,6 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -45,14 +46,16 @@ class BankSoalsTable
                     ->color(Color::Blue)
                     ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Lihat Gambar')
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
                     ->url(fn($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Putar Audio')
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->width('150px'),
             ])
             ->defaultSort('sesi')

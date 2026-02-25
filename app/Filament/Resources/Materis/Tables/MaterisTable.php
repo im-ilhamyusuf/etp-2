@@ -8,6 +8,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -36,16 +37,26 @@ class MaterisTable
                 TextColumn::make('judul'),
                 TextColumn::make('url_video')
                     ->label('URL Video')
-                    ->url(fn($state) => $state)
+                    ->url(fn($record) => $record->url_video)
                     ->openUrlInNewTab()
                     ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->color(Color::Blue)
                     ->width('150px'),
-                TextColumn::make('url_ujian')
-                    ->label('URL Ujian')
-                    ->url(fn($state) => $state)
+                TextColumn::make('url_ujian_1')
+                    ->label('URL Ujian 1')
+                    ->url(fn($record) => $record->url_ujian)
                     ->openUrlInNewTab()
                     ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
+                    ->color(Color::Blue)
+                    ->width('150px'),
+                TextColumn::make('url_ujian_2')
+                    ->label('URL Ujian 2')
+                    ->url(fn($record) => $record->url_ujian)
+                    ->openUrlInNewTab()
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->color(Color::Blue)
                     ->width('150px'),
             ])

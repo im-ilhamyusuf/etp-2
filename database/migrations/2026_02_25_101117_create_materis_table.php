@@ -20,7 +20,8 @@ return new class extends Migration
             ]);
             $table->string('judul');
             $table->string('url_video');
-            $table->string('url_ujian');
+            $table->string('url_ujian_1');
+            $table->string('url_ujian_2');
             $table->timestamps();
         });
     }

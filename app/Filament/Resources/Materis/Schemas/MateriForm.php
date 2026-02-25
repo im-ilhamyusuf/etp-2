@@ -27,8 +27,12 @@ class MateriForm
                             ->label('URL Video')
                             ->url()
                             ->required(),
-                        TextInput::make('url_ujian')
-                            ->label("URL Ujian")
+                        TextInput::make('url_ujian_1')
+                            ->label("URL Ujian 1")
+                            ->url()
+                            ->required(),
+                        TextInput::make('url_ujian_2')
+                            ->label("URL Ujian 2")
                             ->url()
                             ->required(),
                     ])

@@ -25,6 +25,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -88,14 +89,16 @@ class SoalsRelationManager extends RelationManager
                     ->color(color: Color::Blue)
                     ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Lihat Gambar')
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)
                     ->url(fn($record) => $record->audio ? asset('storage/' . $record->audio) : null)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Putar Audio')
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
                     ->width('150px')
             ])
             ->filters([
