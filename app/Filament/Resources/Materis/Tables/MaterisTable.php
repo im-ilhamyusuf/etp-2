@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\BankSoals\Tables;
+namespace App\Filament\Resources\Materis\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class BankSoalsTable
+class MaterisTable
 {
     public static function configure(Table $table): Table
     {
@@ -34,38 +33,36 @@ class BankSoalsTable
                         }
                     })
                     ->width('150px'),
-                TextColumn::make('sesi'),
-                TextColumn::make('nama')
-                    ->searchable(),
-                TextColumn::make('jumlah_soal')
-                    ->getStateUsing(fn($record) => $record->soal->count())
-                    ->width('150px'),
-                TextColumn::make('gambar')
-                    ->label('Gambar')
-                    ->color(Color::Blue)
-                    ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
+                TextColumn::make('judul'),
+                TextColumn::make('url_video')
+                    ->label('URL Video')
+                    ->url(fn($state) => $state)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Lihat Gambar')
-                    ->width('150px'),
-                TextColumn::make('audio')
-                    ->label('Audio')
+                    ->formatStateUsing(fn() => 'Buka')
                     ->color(Color::Blue)
-                    ->url(fn($record) => $record->audio ? asset('storage/' . $record->audio) : null)
+                    ->width('150px'),
+                TextColumn::make('url_ujian')
+                    ->label('URL Ujian')
+                    ->url(fn($state) => $state)
                     ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Putar Audio')
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->color(Color::Blue)
                     ->width('150px'),
             ])
-            ->defaultSort('sesi')
+            ->defaultSort('jenis')
             ->filters([
                 //
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make()
-                        ->visible(fn($record) => $record->soal->count() == 0),
                 ])
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }

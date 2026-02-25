@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\KamusNilais\Tables;
 
 use App\Filament\Imports\KamusNilaiImporter;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -38,9 +39,15 @@ class KamusNilaisTable
                     ->importer(KamusNilaiImporter::class)
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                ])
+            ]);
     }
 }

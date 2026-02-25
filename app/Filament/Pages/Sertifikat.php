@@ -39,7 +39,9 @@ class Sertifikat extends Page implements HasTable
                     ->searchable(),
                 TextColumn::make('jadwal.mulai')
                     ->label("Jadwal Ujian")
-                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
+                    ->dateTime('d F Y H:i')
+                    ->timezone('Asia/Jakarta')
+                    ->searchable(),
                 TextColumn::make('nilai_akhir')
                     ->label("Nilai Akhir"),
                 TextColumn::make('sertifikat')

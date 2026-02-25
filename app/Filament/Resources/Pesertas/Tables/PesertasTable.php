@@ -2,8 +2,7 @@
 
 namespace App\Filament\Resources\Pesertas\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -24,17 +23,17 @@ class PesertasTable
                 TextColumn::make('user.name')
                     ->sortable()
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => ucwords($state)),
+                    ->formatStateUsing(fn($state) => ucwords($state)),
                 TextColumn::make('status')
                     ->sortable()
                     ->badge()
-                    ->color(fn ($record) => $record->status == 'mahasiswa' ? 'success' : 'warning')
-                    ->formatStateUsing(fn ($state) => ucwords($state))
+                    ->color(fn($record) => $record->status == 'mahasiswa' ? 'success' : 'warning')
+                    ->formatStateUsing(fn($state) => ucwords($state))
                     ->width('130px'),
                 TextColumn::make('jenis_kelamin')
                     ->badge()
-                    ->getStateUsing(fn ($record) => $record->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan')
-                    ->color(fn ($record) => $record->jenis_kelamin == 'L' ? 'success' : 'warning')
+                    ->getStateUsing(fn($record) => $record->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan')
+                    ->color(fn($record) => $record->jenis_kelamin == 'L' ? 'success' : 'warning')
                     ->width('120px'),
                 ImageColumn::make('foto')
                     ->disk('public'),
@@ -51,7 +50,9 @@ class PesertasTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                ])
             ]);
     }
 }

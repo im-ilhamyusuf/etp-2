@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class BankSoalForm
 {
@@ -15,9 +16,10 @@ class BankSoalForm
         return $schema
             ->components([
                 Section::make("Formulir Bank Soal")
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Select::make('jenis')
-                            ->options(['listening' => 'Listening', 'reading' => 'Reading', 'structure' => 'Structure'])
+                            ->options(['listening' => 'Listening', 'structure' => 'Structure', 'reading' => 'Reading'])
                             ->required()
                             ->searchable(),
                         TextInput::make('sesi')

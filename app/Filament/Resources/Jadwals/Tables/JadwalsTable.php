@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Jadwals\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -17,9 +19,13 @@ class JadwalsTable
         return $table
             ->columns([
                 TextColumn::make('mulai')
-                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
+                    ->dateTime('d F Y H:i')
+                    ->timezone('Asia/Jakarta')
+                    ->searchable(),
                 TextColumn::make('tutup')
-                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
+                    ->dateTime('d F Y H:i')
+                    ->timezone('Asia/Jakarta')
+                    ->searchable(),
                 TextColumn::make('biaya_1')
                     ->numeric()
                     ->prefix('Rp')
@@ -48,8 +54,12 @@ class JadwalsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn($record) => !$record->pesertaJadwal?->count() > 0)
+                ])
             ]);
     }
 }
