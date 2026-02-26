@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BankSoals\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -12,6 +13,7 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class BankSoalsTable
 {
@@ -42,13 +44,21 @@ class BankSoalsTable
                     ->getStateUsing(fn($record) => $record->soal->count())
                     ->width('150px'),
                 TextColumn::make('gambar')
-                    ->label('Gambar')
-                    ->color(Color::Blue)
-                    ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
-                    ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Buka')
-                    ->icon(Heroicon::Link)
-                    ->width('150px'),
+                    ->formatStateUsing(fn() => 'Lihat')
+                    ->color('primary')
+                    ->icon(Heroicon::Eye)
+                    ->width('150px')
+                    ->action(
+                        Action::make('lihatGambar')
+                            ->modalHeading('Gambar Pengantar')
+                            ->modalWidth('xl')
+                            ->modalContent(fn($record) => new HtmlString(
+                                '<img src="' . asset('storage/' . $record->gambar) . '" class="w-full rounded-lg">'
+                            ))
+                            ->modalFooterActions()
+                            ->modalSubmitAction(false)
+                            ->modalCancelAction(false)
+                    ),
                 TextColumn::make('audio')
                     ->label('Audio')
                     ->color(Color::Blue)

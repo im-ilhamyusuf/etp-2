@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\BankSoals\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 
 class BankSoalInfolist
 {
@@ -29,12 +31,20 @@ class BankSoalInfolist
                         TextEntry::make('jumlah_soal')
                             ->getStateUsing(fn($record) => $record->soal()->count()),
                         TextEntry::make('gambar')
-                            ->label('Gambar')
-                            ->color(Color::Blue)
-                            ->url(fn($record) => asset('storage/' . $record->gambar))
-                            ->openUrlInNewTab()
-                            ->formatStateUsing(fn() => 'Buka')
-                            ->icon(Heroicon::Link),
+                            ->formatStateUsing(fn() => 'Lihat')
+                            ->color('primary')
+                            ->icon(Heroicon::Eye)
+                            ->action(
+                                Action::make('lihatGambar')
+                                    ->modalHeading('Gambar Pengantar')
+                                    ->modalWidth('xl')
+                                    ->modalContent(fn($record) => new HtmlString(
+                                        '<img src="' . asset('storage/' . $record->gambar) . '" class="w-full rounded-lg">'
+                                    ))
+                                    ->modalFooterActions()
+                                    ->modalSubmitAction(false)
+                                    ->modalCancelAction(false)
+                            ),
                         TextEntry::make('audio')
                             ->label('Audio')
                             ->color(Color::Blue)

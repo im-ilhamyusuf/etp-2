@@ -6,6 +6,7 @@ use App\Filament\Imports\SoalImporter;
 use App\Filament\Resources\BankSoals\Pages\ViewBankSoal;
 use App\Models\SoalJawaban;
 use DB;
+use Filament\Actions\Action;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -29,6 +30,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 class SoalsRelationManager extends RelationManager
 {
@@ -85,12 +87,20 @@ class SoalsRelationManager extends RelationManager
                     ->searchable()
                     ->wrap(),
                 TextColumn::make('gambar')
-                    ->label('Gambar')
-                    ->color(color: Color::Blue)
-                    ->url(fn($record) => $record->gambar ? asset('storage/' . $record->gambar) : null)
-                    ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Buka')
-                    ->icon(Heroicon::Link)
+                    ->formatStateUsing(fn() => 'Lihat')
+                    ->color('primary')
+                    ->icon(Heroicon::Eye)
+                    ->action(
+                        Action::make('lihatGambar')
+                            ->modalHeading('Gambar Pengantar')
+                            ->modalWidth('xl')
+                            ->modalContent(fn($record) => new HtmlString(
+                                '<img src="' . asset('storage/' . $record->gambar) . '" class="w-full rounded-lg">'
+                            ))
+                            ->modalFooterActions()
+                            ->modalSubmitAction(false)
+                            ->modalCancelAction(false)
+                    )
                     ->width('150px'),
                 TextColumn::make('audio')
                     ->label('Audio')
