@@ -51,6 +51,11 @@ class Peserta extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function pesertaBatch()
+    {
+        return $this->hasMany(PesertaBatch::class);
+    }
+
     public function pesertaJadwal()
     {
         return $this->hasMany(PesertaJadwal::class);

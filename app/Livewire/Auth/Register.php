@@ -20,7 +20,7 @@ class Register extends Component
         $this->validate([
             'name' => 'required|min:3',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|confirmed',
         ]);
 
         $user = User::create([

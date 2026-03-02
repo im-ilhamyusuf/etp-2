@@ -13,4 +13,26 @@ class Batch extends Model
         'biaya_1',
         'biaya_2'
     ];
+
+    protected $casts = [
+        "mulai" => 'datetime',
+        "tutup" => 'datetime'
+    ];
+
+    protected $appends = ['status'];
+
+    public function getStatusAttribute()
+    {
+        return $this->tutup?->isFuture() ?? false;
+    }
+
+    public function scopeAktif($query)
+    {
+        return $query->where('tutup', '>=', now());
+    }
+
+    public function pesertaBatch()
+    {
+        return $this->hasMany(PesertaBatch::class);
+    }
 }
