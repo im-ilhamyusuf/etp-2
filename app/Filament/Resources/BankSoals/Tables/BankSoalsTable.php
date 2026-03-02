@@ -22,7 +22,7 @@ class BankSoalsTable
         return $table
             ->columns([
                 TextColumn::make('row_index')
-                    ->label("No")
+                    ->label("#")
                     ->rowIndex()
                     ->width('20px'),
                 TextColumn::make('jenis')
@@ -36,9 +36,10 @@ class BankSoalsTable
                             return Color::Green;
                         }
                     })
-                    ->width('150px'),
-                TextColumn::make('sesi'),
-                TextColumn::make('nama')
+                    ->width('100px'),
+                TextColumn::make('sesi')
+                    ->width('70px'),
+                TextColumn::make('judul')
                     ->searchable(),
                 TextColumn::make('jumlah_soal')
                     ->getStateUsing(fn($record) => $record->soal->count())

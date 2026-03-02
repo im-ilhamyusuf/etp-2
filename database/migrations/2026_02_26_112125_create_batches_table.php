@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bank_soals', function (Blueprint $table) {
+        Schema::create('batches', function (Blueprint $table) {
             $table->id();
-            $table->enum("jenis", [
-                "listening",
-                "structure",
-                "reading",
-            ]);
-            $table->integer('sesi');
-            $table->string("judul");
-            $table->string("gambar")->nullable();
-            $table->string("audio")->nullable();
+            $table->string('judul');
+            $table->dateTime('mulai');
+            $table->dateTime('tutup');
+            $table->integer('biaya_1');
+            $table->integer('biaya_2');
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bank_soals');
+        Schema::dropIfExists('batches');
     }
 };

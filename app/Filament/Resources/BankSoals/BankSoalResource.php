@@ -24,7 +24,7 @@ class BankSoalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolderOpen;
 
-    protected static ?string $recordTitleAttribute = 'nama';
+    protected static ?string $recordTitleAttribute = 'judul';
 
     protected static string | UnitEnum | null $navigationGroup = 'Master';
     protected static ?int $navigationSort = 3;

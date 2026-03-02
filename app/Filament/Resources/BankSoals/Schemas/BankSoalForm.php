@@ -25,7 +25,7 @@ class BankSoalForm
                         TextInput::make('sesi')
                             ->required()
                             ->numeric(),
-                        TextInput::make('nama')
+                        TextInput::make('judul')
                             ->required(),
                         FileUpload::make('gambar')
                             ->disk('public')

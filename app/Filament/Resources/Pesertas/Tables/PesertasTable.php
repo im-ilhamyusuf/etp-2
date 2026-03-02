@@ -15,7 +15,7 @@ class PesertasTable
         return $table
             ->columns([
                 TextColumn::make('row_index')
-                    ->label("No")
+                    ->label('#')
                     ->rowIndex()
                     ->width('20px'),
                 TextColumn::make('no_peserta')

@@ -20,11 +20,9 @@ class JadwalsTable
             ->columns([
                 TextColumn::make('mulai')
                     ->dateTime('d F Y H:i')
-                    ->timezone('Asia/Jakarta')
                     ->searchable(),
                 TextColumn::make('tutup')
                     ->dateTime('d F Y H:i')
-                    ->timezone('Asia/Jakarta')
                     ->searchable(),
                 TextColumn::make('biaya_1')
                     ->numeric()
