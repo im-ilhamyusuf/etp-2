@@ -11,4 +11,14 @@ class PesertaBatch extends Model
         'batch_id',
         'bukti_bayar',
     ];
+
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
 }

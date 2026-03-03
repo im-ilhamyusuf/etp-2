@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\Batches\Pages;
 
 use App\Filament\Resources\Batches\BatchResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditBatch extends EditRecord
+class ViewBatch extends ViewRecord
 {
     protected static string $resource = BatchResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Peserta\Widgets;
 
-use App\Models\Jadwal;
-use App\Models\PesertaJadwal;
-use Carbon\Carbon;
+use App\Models\Batch;
+use App\Models\PesertaBatch;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\FileUpload;
@@ -16,16 +15,17 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class JadwalAktifWidget extends TableWidget
+class BatchAktifWidget extends TableWidget
 {
+    protected static ?string $heading = 'Short Course';
     protected static ?int $sort = 4;
     protected int | string | array $columnSpan = 'full';
-
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => Jadwal::aktif())
+            ->query(fn(): Builder => Batch::aktif())
             ->columns([
+                TextColumn::make('judul'),
                 TextColumn::make('mulai')
                     ->label("Jadwal Mulai")
                     ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
@@ -36,7 +36,6 @@ class JadwalAktifWidget extends TableWidget
                     ->numeric()
                     ->prefix('Rp')
                     ->getStateUsing(fn($record) => auth()->user()->peserta?->status == 'mahasiswa' ? $record->biaya_1 : $record->biaya_2),
-                TextColumn::make('kuota'),
                 TextColumn::make('jumlah_peserta')
                     ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
             ])
@@ -47,8 +46,8 @@ class JadwalAktifWidget extends TableWidget
                 //
             ])
             ->recordActions([
-                Action::make("ambil_tes")
-                    ->label('Ambil Tes')
+                Action::make("ambil_short_course")
+                    ->label('Ambil Short Course')
                     ->icon(Heroicon::ChevronDoubleRight)
                     ->visible(
                         function ($record) {
@@ -59,40 +58,27 @@ class JadwalAktifWidget extends TableWidget
 
                             $peserta = auth()->user()->peserta;
 
-                            // 2️⃣ kuota masih tersedia
-                            $jumlahPeserta = PesertaJadwal::where('jadwal_id', $record->id)->count();
-                            $kuotaMasihAda = $jumlahPeserta < $record->kuota;
-
-
-                            // 3️⃣ masih punya tes aktif (jadwal lain)
-                            $punyaTesAktif = PesertaJadwal::where('peserta_id', $peserta->id)
-                                ->whereHas('jadwal', fn($q) => $q->where('tutup', '>', now()))
-                                ->whereNull('selesai')
+                            // sudah pernah ambil jadwal INI (walau sudah selesai)
+                            $sudahAmbilJadwalIni = PesertaBatch::where('peserta_id', $peserta->id)
+                                ->where('batch_id', $record->id)
                                 ->exists();
 
-                            // 4️⃣ sudah pernah ambil jadwal INI (walau sudah selesai)
-                            $sudahAmbilJadwalIni = PesertaJadwal::where('peserta_id', $peserta->id)
-                                ->where('jadwal_id', $record->id)
-                                ->exists();
-
-                            return $kuotaMasihAda
-                                && ! $punyaTesAktif
-                                && ! $sudahAmbilJadwalIni;
+                            return !$sudahAmbilJadwalIni;
                         }
                     )
                     ->schema([
-                        FileUpload::make('bukti_bayar')
-                            ->aboveContent("Silakan unggah bukti pembayaran untuk booking jadwal tes.")
+                        FileUpload::make('bukti_bayar_short_course')
+                            ->aboveContent("Silakan unggah bukti pembayaran untuk ambil Short Course.")
                             ->image()
                             ->disk('public')
                             ->directory('peserta')
                             ->required()
                     ])
                     ->action(function ($data, $record, $livewire) {
-                        PesertaJadwal::create([
+                        PesertaBatch::create([
                             'peserta_id' => auth()->user()->peserta?->id,
-                            'jadwal_id' => $record->id,
-                            'bukti_bayar' => $data['bukti_bayar']
+                            'batch_id' => $record->id,
+                            'bukti_bayar' => $data['bukti_bayar_short_course']
                         ]);
 
                         auth()->user()->peserta->load('pesertaJadwal');
@@ -100,7 +86,7 @@ class JadwalAktifWidget extends TableWidget
                         Notification::make()
                             ->success()
                             ->title('Berhasil')
-                            ->body('Bukti pembayaran berhasil diunggah dan jadwal tes telah dibuat.')
+                            ->body('Bukti pembayaran berhasil diunggah dan Short Course telah diambil.')
                             ->send();
                     })
                     ->modalWidth(Width::Medium)
