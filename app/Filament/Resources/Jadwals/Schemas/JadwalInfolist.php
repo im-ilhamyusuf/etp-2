@@ -6,7 +6,6 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class JadwalInfolist
 {
@@ -15,7 +14,6 @@ class JadwalInfolist
         return $schema
             ->components([
                 Section::make('Informasi Jadwal')
-                    ->icon(Heroicon::OutlinedCalendar)
                     ->columnSpanFull()
                     ->columns(4)
                     ->schema([

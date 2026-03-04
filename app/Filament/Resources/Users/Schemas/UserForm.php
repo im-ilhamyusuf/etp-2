@@ -2,14 +2,11 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class UserForm
 {
@@ -18,7 +15,6 @@ class UserForm
         return $schema
             ->components([
                 Section::make("Formulir User")
-                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Group::make([
                             TextInput::make('name')
@@ -38,8 +34,8 @@ class UserForm
                                 ->required(),
                             TextInput::make('password')
                                 ->password()
-                                ->required(fn ($context) => $context === 'create')
-                                ->dehydrated(fn ($state) => filled($state)),
+                                ->required(fn($context) => $context === 'create')
+                                ->dehydrated(fn($state) => filled($state)),
                         ]),
                     ])
             ]);

@@ -5,7 +5,6 @@ namespace App\Filament\Resources\KamusNilais\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class KamusNilaiForm
 {
@@ -14,7 +13,6 @@ class KamusNilaiForm
         return $schema
             ->components([
                 Section::make("Formulir Kamus Nilai")
-                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         TextInput::make('jumlah_benar')
                             ->required()

@@ -15,7 +15,6 @@ class BatchForm
         return $schema
             ->components([
                 Section::make("Formulir Batch")
-                    ->icon(Heroicon::OutlinedDocumentText)
                     ->columnSpanFull()
                     ->columns([
                         'default' => 1,

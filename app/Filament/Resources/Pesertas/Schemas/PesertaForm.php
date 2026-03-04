@@ -11,7 +11,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class PesertaForm
 {
@@ -23,7 +22,6 @@ class PesertaForm
                     ->columnSpan(2)
                     ->schema([
                         Section::make('Akun')
-                            ->icon(Heroicon::OutlinedUserCircle)
                             ->columns(2)
                             ->schema([
                                 Select::make('user_id')
@@ -37,7 +35,6 @@ class PesertaForm
                             ]),
 
                         Section::make('Biodata')
-                            ->icon(Heroicon::OutlinedIdentification)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('nik')
@@ -74,7 +71,6 @@ class PesertaForm
                             ]),
 
                         Section::make('Pendidikan')
-                            ->icon(Heroicon::OutlinedAcademicCap)
                             ->columns(2)
                             ->schema([
                                 Select::make('pendidikan_terakhir')
@@ -94,7 +90,6 @@ class PesertaForm
                             ]),
 
                         Section::make('Pekerjaan')
-                            ->icon(Heroicon::OutlinedBriefcase)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('pekerjaan'),
@@ -113,7 +108,6 @@ class PesertaForm
                     ]),
 
                 Section::make("Pas Foto")
-                    ->icon(Heroicon::OutlinedPhoto)
                     ->schema([
                         FileUpload::make('foto')
                             ->image()

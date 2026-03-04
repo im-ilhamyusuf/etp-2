@@ -50,7 +50,6 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
             ->record($this->record)
             ->schema([
                 Section::make('Informasi Short Course')
-                    ->icon(Heroicon::AcademicCap)
                     ->columns([
                         'default' => 2,
                         'xl' => 4
@@ -82,7 +81,6 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
                 ])
                     ->schema([
                         Section::make('Nilai Pretest')
-                            ->icon(Heroicon::DocumentCheck)
                             ->columns([
                                 'default' => 2,
                                 'xl' => 4
@@ -99,7 +97,6 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
                             ]),
 
                         Section::make('Nilai Posttest')
-                            ->icon(Heroicon::DocumentCheck)
                             ->columns([
                                 'default' => 2,
                                 'xl' => 4

@@ -6,7 +6,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class MateriForm
 {
@@ -15,7 +14,6 @@ class MateriForm
         return $schema
             ->components([
                 Section::make('Formulir Materi')
-                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Select::make('jenis')
                             ->options(['listening' => 'Listening', 'structure' => 'Structure', 'reading' => 'Reading'])

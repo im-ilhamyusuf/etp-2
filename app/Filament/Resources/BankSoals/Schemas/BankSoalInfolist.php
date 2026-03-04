@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\BankSoals\Schemas;
 
 use Filament\Actions\Action;
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -22,7 +21,6 @@ class BankSoalInfolist
                         'default' => 1,
                         'md' => 3,
                     ])
-                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         TextEntry::make('jenis')
                             ->badge(),

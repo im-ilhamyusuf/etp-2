@@ -72,7 +72,6 @@ class Profil extends Page implements HasSchemas
                     ->columnSpan(2)
                     ->schema([
                         Section::make('Akun')
-                            ->icon(Heroicon::OutlinedUserCircle)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('peserta.no_peserta')
@@ -89,7 +88,6 @@ class Profil extends Page implements HasSchemas
                             ]),
 
                         Section::make('Biodata')
-                            ->icon(Heroicon::OutlinedIdentification)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('peserta.nik')
@@ -127,7 +125,6 @@ class Profil extends Page implements HasSchemas
                             ]),
 
                         Section::make('Pendidikan')
-                            ->icon(Heroicon::OutlinedAcademicCap)
                             ->columns(2)
                             ->schema([
                                 Select::make('peserta.pendidikan_terakhir')
@@ -148,7 +145,6 @@ class Profil extends Page implements HasSchemas
                             ]),
 
                         Section::make('Pekerjaan')
-                            ->icon(Heroicon::OutlinedBriefcase)
                             ->columns(2)
                             ->schema([
                                 TextInput::make('peserta.pekerjaan')
@@ -169,7 +165,6 @@ class Profil extends Page implements HasSchemas
                     ]),
 
                 Section::make("Pas Foto")
-                    ->icon(Heroicon::OutlinedPhoto)
                     ->schema([
                         FileUpload::make('peserta.foto')
                             ->image()

@@ -7,7 +7,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class JadwalForm
 {
@@ -16,34 +15,33 @@ class JadwalForm
         return $schema
             ->components([
                 Section::make("Formulir Jadwal Ujian")
-                ->icon(Heroicon::OutlinedDocumentText)
-                ->schema([
-                    DateTimePicker::make('mulai')
-                        ->required()
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            if (! $state) {
-                                return;
-                            }
+                    ->schema([
+                        DateTimePicker::make('mulai')
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if (! $state) {
+                                    return;
+                                }
 
-                            $set('tutup', Carbon::parse($state)->addHours(2));
-                        }),
+                                $set('tutup', Carbon::parse($state)->addHours(2));
+                            }),
 
-                    DateTimePicker::make('tutup')
-                        ->required()
-                        ->readOnly(),
-                    TextInput::make('kuota')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('biaya_1')
-                        ->required()
-                        ->numeric()
-                        ->prefix('Rp'),
-                    TextInput::make('biaya_2')
-                        ->required()
-                        ->numeric()
-                        ->prefix('Rp'),
-                ])
+                        DateTimePicker::make('tutup')
+                            ->required()
+                            ->readOnly(),
+                        TextInput::make('kuota')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('biaya_1')
+                            ->required()
+                            ->numeric()
+                            ->prefix('Rp'),
+                        TextInput::make('biaya_2')
+                            ->required()
+                            ->numeric()
+                            ->prefix('Rp'),
+                    ])
             ]);
     }
 }
