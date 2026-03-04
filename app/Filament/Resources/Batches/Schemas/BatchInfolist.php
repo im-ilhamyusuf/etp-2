@@ -17,10 +17,13 @@ class BatchInfolist
                 Section::make('Informasi Jadwal')
                     ->icon(Heroicon::OutlinedCalendar)
                     ->columnSpanFull()
-                    ->columns(4)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'xl' => 4
+                    ])
                     ->schema([
-                        TextEntry::make('judul')
-                            ->columnSpan(2),
+                        TextEntry::make('judul'),
                         TextEntry::make('jadwal')
                             ->getStateUsing(fn($record) => $record->mulai->translatedFormat('d F, H:i') . " s.d " . $record->tutup->translatedFormat('d F, H:i')),
                         IconEntry::make('status')

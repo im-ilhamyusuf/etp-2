@@ -71,6 +71,7 @@ class PesertaRelationManager extends RelationManager
                             ->modalCancelAction(false)
                     ),
                 IconColumn::make('status_validasi')
+                    ->label('Status Validasi')
                     ->getStateUsing(fn($record) => $record->validasi != null)
                     ->boolean(),
             ])

@@ -6,7 +6,6 @@ use App\Models\Jadwal;
 use App\Models\PesertaJadwal;
 use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
@@ -26,11 +25,15 @@ class JadwalAktifWidget extends TableWidget
         return $table
             ->query(fn(): Builder => Jadwal::aktif())
             ->columns([
+                TextColumn::make('row_index')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
                 TextColumn::make('mulai')
-                    ->label("Jadwal Mulai")
+                    ->label("Mulai")
                     ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('tutup')
-                    ->label("Jadwal Tutup")
+                    ->label("Selesai")
                     ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('biaya')
                     ->numeric()

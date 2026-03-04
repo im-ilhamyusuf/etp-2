@@ -27,7 +27,7 @@ class Jadwal extends Page implements HasInfolists
     protected string $view = 'filament.peserta.pages.jadwal';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public function jadwalInfolist(Schema $schema): Schema
     {

@@ -25,19 +25,23 @@ class BatchAktifWidget extends TableWidget
         return $table
             ->query(fn(): Builder => Batch::aktif())
             ->columns([
+                TextColumn::make('row_index')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
                 TextColumn::make('judul'),
                 TextColumn::make('mulai')
-                    ->label("Jadwal Mulai")
+                    ->label("Mulai")
                     ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('tutup')
-                    ->label("Jadwal Tutup")
+                    ->label("Selesai")
                     ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                 TextColumn::make('biaya')
                     ->numeric()
                     ->prefix('Rp')
                     ->getStateUsing(fn($record) => auth()->user()->peserta?->status == 'mahasiswa' ? $record->biaya_1 : $record->biaya_2),
                 TextColumn::make('jumlah_peserta')
-                    ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
+                    ->getStateUsing(fn($record) => $record->pesertaBatch?->count()),
             ])
             ->filters([
                 //
