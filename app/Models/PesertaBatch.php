@@ -10,6 +10,7 @@ class PesertaBatch extends Model
         'peserta_id',
         'batch_id',
         'bukti_bayar',
+        'validasi'
     ];
 
     public function peserta()

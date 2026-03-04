@@ -9,6 +9,7 @@ use App\Filament\Resources\Batches\Pages\ViewBatch;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Schemas\BatchInfolist;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
+use App\Filament\Resources\Batches\RelationManagers\PesertaRelationManager;
 use App\Models\Batch;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -47,7 +48,7 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PesertaRelationManager::class
         ];
     }
 
