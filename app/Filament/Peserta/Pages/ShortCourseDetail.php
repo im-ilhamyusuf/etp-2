@@ -125,6 +125,7 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
             ->columns([
                 TextColumn::make('judul'),
 
+                // PRETEST (selalu aktif)
                 TextColumn::make('url_ujian_1')
                     ->label('Pretest')
                     ->url(fn($record) => $record->url_ujian_1)
@@ -133,43 +134,45 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
                     ->icon(Heroicon::Link)
                     ->openUrlInNewTab(),
 
+                // VIDEO (tergantung sesi)
                 TextColumn::make('url_video')
                     ->label('Video')
                     ->formatStateUsing(
                         fn($record) =>
-                        $this->isUnlocked($record) ? 'Buka' : 'Terkunci'
+                        $this->isSesiUnlocked($record) ? 'Buka' : 'Terkunci'
                     )
                     ->url(
                         fn($record) =>
-                        $this->isUnlocked($record) ? $record->url_video : null
+                        $this->isSesiUnlocked($record) ? $record->url_video : null
                     )
                     ->color(
                         fn($record) =>
-                        $this->isUnlocked($record) ? Color::Blue : Color::Gray
+                        $this->isSesiUnlocked($record) ? Color::Blue : Color::Gray
                     )
                     ->icon(Heroicon::Link)
                     ->openUrlInNewTab(),
 
+                // POSTTEST (tergantung sesi + batch aktif)
                 TextColumn::make('url_ujian_2')
                     ->label('Posttest')
                     ->formatStateUsing(
                         fn($record) =>
-                        $this->isUnlocked($record) ? 'Buka' : 'Terkunci'
+                        $this->isPosttestUnlocked($record) ? 'Buka' : 'Terkunci'
                     )
                     ->url(
                         fn($record) =>
-                        $this->isUnlocked($record) ? $record->url_ujian_2 : null
+                        $this->isPosttestUnlocked($record) ? $record->url_ujian_2 : null
                     )
                     ->color(
                         fn($record) =>
-                        $this->isUnlocked($record) ? Color::Blue : Color::Gray
+                        $this->isPosttestUnlocked($record) ? Color::Blue : Color::Gray
                     )
                     ->icon(Heroicon::Link)
                     ->openUrlInNewTab(),
             ]);
     }
 
-    protected function isUnlocked($materi): bool
+    protected function isSesiUnlocked($materi): bool
     {
         return match ($materi->jenis) {
             'listening' => $this->record->poin_a1 != 0,
@@ -177,5 +180,11 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
             'reading' => $this->record->poin_c1 != 0,
             default => false,
         };
+    }
+
+    protected function isPosttestUnlocked($materi): bool
+    {
+        return $this->isSesiUnlocked($materi)
+            && $this->record->batch->status === true;
     }
 }
