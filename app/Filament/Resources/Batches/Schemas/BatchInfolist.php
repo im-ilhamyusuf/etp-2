@@ -18,14 +18,21 @@ class BatchInfolist
                     ->icon(Heroicon::OutlinedCalendar)
                     ->columnSpanFull()
                     ->columns([
-                        'default' => 1,
-                        'md' => 2,
+                        'default' => 2,
                         'xl' => 4
                     ])
                     ->schema([
-                        TextEntry::make('judul'),
-                        TextEntry::make('jadwal')
-                            ->getStateUsing(fn($record) => $record->mulai->translatedFormat('d F, H:i') . " s.d " . $record->tutup->translatedFormat('d F, H:i')),
+                        TextEntry::make('judul')
+                            ->columnSpan([
+                                'default' => 2,
+                                'xl' => 1
+                            ]),
+                        TextEntry::make('mulai')
+                            ->label('Mulai')
+                            ->dateTime('d F Y, H:i'),
+                        TextEntry::make('tutup')
+                            ->label('Selesai')
+                            ->dateTime('d F Y, H:i'),
                         IconEntry::make('status')
                             ->boolean(),
                         TextEntry::make('biaya_1')
@@ -36,7 +43,7 @@ class BatchInfolist
                             ->prefix('Rp'),
                         TextEntry::make('jumlah_peserta')
                             ->numeric()
-                            ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
+                            ->getStateUsing(fn($record) => $record->pesertaBatch?->count()),
                         TextEntry::make('jumlah_jadwal_tes')
                     ])
             ]);

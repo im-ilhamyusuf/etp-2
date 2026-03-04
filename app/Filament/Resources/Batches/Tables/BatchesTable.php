@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Batches\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -26,12 +27,16 @@ class BatchesTable
                     ->dateTime('d F Y, H:i')
                     ->searchable(),
                 TextColumn::make('tutup')
+                    ->label('Selesai')
                     ->dateTime('d F Y, H:i')
                     ->searchable(),
                 TextColumn::make('biaya_1'),
                 TextColumn::make('biaya_2'),
                 TextColumn::make('jumlah_peserta')
-                    ->label('Jumlah Peserta'),
+                    ->label('Jumlah Peserta')
+                    ->numeric()
+                    ->width('150px')
+                    ->getStateUsing(fn($record) => $record->pesertaBatch?->count()),
                 TextColumn::make('jumlah_jadwal_tes')
                     ->label('Jumlah Jadwal Tes'),
             ])
@@ -42,12 +47,10 @@ class BatchesTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn($record) => $record->pesertaBatch?->count() == 0)
                 ])
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }
