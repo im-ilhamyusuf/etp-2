@@ -23,9 +23,9 @@ class KamusNilaiResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'jumlah_benar';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Master';
+    protected static string | UnitEnum | null $navigationGroup = 'Ujian';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

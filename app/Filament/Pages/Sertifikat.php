@@ -24,7 +24,7 @@ class Sertifikat extends Page implements HasTable
 
     protected static string|UnitEnum|null $navigationGroup = 'Ujian';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     public function table(Table $table)
     {
