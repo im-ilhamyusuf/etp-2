@@ -18,10 +18,15 @@ class JadwalsTable
     {
         return $table
             ->columns([
+                TextColumn::make('row_index')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
                 TextColumn::make('mulai')
                     ->dateTime('d F Y H:i')
                     ->searchable(),
                 TextColumn::make('tutup')
+                    ->label('Selesai')
                     ->dateTime('d F Y H:i')
                     ->searchable(),
                 TextColumn::make('biaya_1')
@@ -34,6 +39,11 @@ class JadwalsTable
                     ->width('150px'),
                 IconColumn::make('status')
                     ->boolean()
+                    ->width('100px'),
+                IconColumn::make('batch_id')
+                    ->label('Batch')
+                    ->boolean()
+                    ->getStateUsing(fn($record) => !is_null($record->batch_id))
                     ->width('100px'),
                 TextColumn::make('kuota')
                     ->numeric()

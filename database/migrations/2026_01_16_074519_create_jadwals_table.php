@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('jadwals', function (Blueprint $table) {
             $table->id();
+            $table->integer('batch_id')->nullable();
             $table->dateTime('mulai');
             $table->dateTime('tutup');
             $table->integer('kuota');

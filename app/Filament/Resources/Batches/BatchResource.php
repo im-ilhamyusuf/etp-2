@@ -6,6 +6,7 @@ use App\Filament\Resources\Batches\Pages\CreateBatch;
 use App\Filament\Resources\Batches\Pages\EditBatch;
 use App\Filament\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\Pages\ViewBatch;
+use App\Filament\Resources\Batches\RelationManagers\JadwalRelationManager;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Schemas\BatchInfolist;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
@@ -24,7 +25,7 @@ class BatchResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Batch';
+    protected static ?string $recordTitleAttribute = 'judul';
 
     protected static string|UnitEnum|null $navigationGroup = 'Short Course';
 
@@ -48,7 +49,8 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PesertaRelationManager::class
+            'peserta' => PesertaRelationManager::class,
+            'jadwal' => JadwalRelationManager::class
         ];
     }
 

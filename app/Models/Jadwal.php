@@ -36,4 +36,9 @@ class Jadwal extends Model
     {
         return $this->hasMany(PesertaJadwal::class);
     }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
 }

@@ -20,10 +20,13 @@ class JadwalInfolist
                         TextEntry::make('mulai')
                             ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                         TextEntry::make('tutup')
+                            ->label('Selesai')
                             ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
                         IconEntry::make('status')
-                            ->boolean()
-                            ->columnSpan(2),
+                            ->boolean(),
+                        TextEntry::make('batch.judul')
+                            ->label('Batch')
+                            ->placeholder('-'),
                         TextEntry::make('biaya_1')
                             ->numeric()
                             ->prefix('Rp'),

@@ -35,4 +35,9 @@ class Batch extends Model
     {
         return $this->hasMany(PesertaBatch::class);
     }
+
+    public function jadwal()
+    {
+        return $this->hasMany(Jadwal::class);
+    }
 }

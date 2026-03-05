@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
+use App\Filament\Resources\Batches\Pages\ViewBatch;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\AssociateAction;
@@ -27,11 +28,19 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
 class PesertaRelationManager extends RelationManager
 {
     protected static string $relationship = 'pesertaBatch';
+
+    protected static ?string $title = 'Peserta';
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return $pageClass === ViewBatch::class;
+    }
 
     public function form(Schema $schema): Schema
     {

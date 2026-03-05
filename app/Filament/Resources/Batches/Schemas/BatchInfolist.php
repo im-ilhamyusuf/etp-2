@@ -43,6 +43,8 @@ class BatchInfolist
                             ->numeric()
                             ->getStateUsing(fn($record) => $record->pesertaBatch?->count()),
                         TextEntry::make('jumlah_jadwal_tes')
+                            ->numeric()
+                            ->getStateUsing(fn($record) => $record->jadwal?->count())
                     ])
             ]);
     }
