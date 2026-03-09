@@ -156,7 +156,7 @@ class PesertaRelationManager extends RelationManager
                             ]),
 
                             Group::make([
-                                Section::make('Prestest')
+                                Section::make('Pretest')
                                     ->schema([
                                         TextInput::make('poin_a1')
                                             ->label("Listening")
