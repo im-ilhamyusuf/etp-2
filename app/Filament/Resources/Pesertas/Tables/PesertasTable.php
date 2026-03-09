@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pesertas\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -19,18 +20,19 @@ class PesertasTable
                     ->rowIndex()
                     ->width('20px'),
                 TextColumn::make('no_peserta')
+                    ->label('No. Peserta')
                     ->searchable(),
                 TextColumn::make('user.name')
+                    ->label('Nama Lengkap')
                     ->sortable()
                     ->searchable()
                     ->formatStateUsing(fn($state) => ucwords($state)),
-                TextColumn::make('status')
-                    ->sortable()
-                    ->badge()
-                    ->color(fn($record) => $record->status == 'mahasiswa' ? 'success' : 'warning')
-                    ->formatStateUsing(fn($state) => ucwords($state))
+                IconColumn::make('status_short_course')
+                    ->label('Short Course')
+                    ->boolean()
                     ->width('130px'),
                 TextColumn::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
                     ->badge()
                     ->getStateUsing(fn($record) => $record->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan')
                     ->color(fn($record) => $record->jenis_kelamin == 'L' ? 'success' : 'warning')

@@ -23,7 +23,7 @@ class JadwalAktifWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => Jadwal::aktif())
+            ->query(fn(): Builder => Jadwal::aktif()->khusus())
             ->columns([
                 TextColumn::make('row_index')
                     ->rowIndex()

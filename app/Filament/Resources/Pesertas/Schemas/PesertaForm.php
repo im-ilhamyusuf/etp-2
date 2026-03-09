@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pesertas\Schemas;
 
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -101,6 +102,11 @@ class PesertaForm
                                     ->label("NIDN")
                                     ->belowContent("Isi jika pekerjaan Dosen"),
                             ]),
+
+                        Section::make('Short Course')
+                            ->schema([
+                                DateTimePicker::make('short_course')
+                            ])
                     ])
                     ->columnOrder([
                         'default' => 2,

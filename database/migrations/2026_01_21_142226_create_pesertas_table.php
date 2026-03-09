@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('no_peserta')->unique();
+            $table->dateTime('short_course');
             $table->string('foto')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
             $table->string('nik', 20)->unique()->nullable();

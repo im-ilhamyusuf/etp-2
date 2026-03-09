@@ -65,6 +65,7 @@ class JadwalRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('mulai')
+            ->defaultSort('mulai', 'desc')
             ->columns([
                 TextColumn::make('mulai')
                     ->dateTime('d F Y H:i')

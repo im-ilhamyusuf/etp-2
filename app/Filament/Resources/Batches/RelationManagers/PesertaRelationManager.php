@@ -13,6 +13,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -88,6 +89,9 @@ class PesertaRelationManager extends RelationManager
                     ->getStateUsing(fn($record) => "$record->poin_a1,$record->poin_b1,$record->poin_c1,$record->nilai_akhir1"),
                 TextColumn::make('Posttest')
                     ->getStateUsing(fn($record) => "$record->poin_a2,$record->poin_b2,$record->poin_c2,$record->nilai_akhir2"),
+                IconColumn::make('peserta.status_short_course')
+                    ->label('Short Course')
+                    ->boolean()
             ])
             ->filters([
                 //
@@ -123,6 +127,7 @@ class PesertaRelationManager extends RelationManager
                                 'poin_b2' => $record->poin_b2,
                                 'poin_c2' => $record->poin_c2,
                                 'nilai_akhir2' => $record->nilai_akhir2,
+                                'short_course' => $record->peserta?->short_course,
                             ]);
                         })
                         ->schema([
@@ -181,13 +186,33 @@ class PesertaRelationManager extends RelationManager
                                         TextInput::make('nilai_akhir2')
                                             ->label("Nilai Akhir")
                                             ->numeric(),
+                                    ]),
+
+                                Section::make('Short Course')
+                                    ->schema([
+                                        DateTimePicker::make('short_course')
                                     ])
                             ])
                                 ->inlineLabel()
                         ])
                         ->modalSubmitActionLabel("Simpan")
                         ->action(function ($record, $data) {
-                            $record->update($data);
+
+                            $record->update([
+                                'poin_a1' => $data['poin_a1'],
+                                'poin_b1' => $data['poin_b1'],
+                                'poin_c1' => $data['poin_c1'],
+                                'nilai_akhir1' => $data['nilai_akhir1'],
+                                'poin_a2' => $data['poin_a2'],
+                                'poin_b2' => $data['poin_b2'],
+                                'poin_c2' => $data['poin_c2'],
+                                'nilai_akhir2' => $data['nilai_akhir2'],
+                            ]);
+
+                            // update relasi peserta
+                            $record->peserta->update([
+                                'short_course' => $data['short_course'] ?? null,
+                            ]);
 
                             Notification::make()
                                 ->title('Berhasil')
@@ -195,6 +220,7 @@ class PesertaRelationManager extends RelationManager
                                 ->success()
                                 ->send();
                         }),
+
                     DeleteAction::make(),
                 ])
             ])

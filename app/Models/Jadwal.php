@@ -32,6 +32,11 @@ class Jadwal extends Model
         return $query->where('tutup', '>=', now());
     }
 
+    public function scopeKhusus($query)
+    {
+        return $query->whereNull('batch_id');
+    }
+
     public function pesertaJadwal()
     {
         return $this->hasMany(PesertaJadwal::class);

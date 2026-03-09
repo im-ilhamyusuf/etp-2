@@ -9,6 +9,7 @@ class Peserta extends Model
     protected $fillable = [
         'user_id',
         'jenis_kelamin',
+        'short_course',
         'foto',
         'nik',
         'tempat_lahir',
@@ -28,7 +29,8 @@ class Peserta extends Model
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'datetime'
+        'tanggal_lahir' => 'datetime',
+        'short_course' => 'datetime'
     ];
 
     protected static function booted()
@@ -75,10 +77,15 @@ class Peserta extends Model
             ->with('jadwal');
     }
 
-    protected $appends = ['status'];
+    protected $appends = ['status', 'status_short_course'];
 
     public function getStatusAttribute()
     {
         return $this->nim != null ? 'mahasiswa' : 'non mahasiswa';
+    }
+
+    public function getStatusShortCourseAttribute()
+    {
+        return !is_null($this->short_course);
     }
 }

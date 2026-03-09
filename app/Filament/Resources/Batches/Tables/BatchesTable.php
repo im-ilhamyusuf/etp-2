@@ -38,7 +38,8 @@ class BatchesTable
                     ->width('150px')
                     ->getStateUsing(fn($record) => $record->pesertaBatch?->count()),
                 TextColumn::make('jumlah_jadwal_tes')
-                    ->label('Jumlah Jadwal Tes'),
+                    ->label('Jumlah Jadwal Tes')
+                    ->getStateUsing(fn($record) => $record->jadwal?->count()),
             ])
             ->filters([
                 //
