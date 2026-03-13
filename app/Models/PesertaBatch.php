@@ -11,14 +11,8 @@ class PesertaBatch extends Model
         'batch_id',
         'bukti_bayar',
         'validasi',
-        'poin_a1',
-        'poin_b1',
-        'poin_c1',
-        'nilai_akhir1',
-        'poin_a2',
-        'poin_b2',
-        'poin_c2',
-        'nilai_akhir2',
+        'pretest',
+        'posttest',
     ];
 
     public function peserta()

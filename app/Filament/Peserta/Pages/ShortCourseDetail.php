@@ -2,19 +2,23 @@
 
 namespace App\Filament\Peserta\Pages;
 
+use App\Models\Jadwal;
 use App\Models\Materi;
 use App\Models\PesertaBatch;
+use App\Models\PesertaJadwal;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
-use Filament\Schemas\Components\Grid;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -72,45 +76,77 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
 
                         IconEntry::make('batch.status')
                             ->label('Status Jadwal')
-                            ->boolean(),
+                            ->boolean()
+                            ->columnSpan([
+                                'default' => 2,
+                                'xl' => 1
+                            ]),
+
+                        TextEntry::make('pretest')
+                            ->label('Pre-test'),
+
+                        TextEntry::make('posttest')
+                            ->label('Post-test'),
+
+                        TextEntry::make('catatan')
+                            ->state(fn() => 'Selesaikan Pre-test untuk mengakses materi dan post-test')
+                            ->columnSpan([
+                                'default' => 2,
+                                'xl' => 2
+                            ]),
                     ]),
+            ]);
+    }
 
-                Grid::make([
-                    'default' => 1,
-                    'md' => 2
-                ])
+    public function materiInfolist(Schema $schema): Schema
+    {
+        $materi = Materi::first();
+
+        return $schema
+            ->record($materi)
+            ->schema([
+                Section::make('Materi Course')
+                    ->columns(5)
                     ->schema([
-                        Section::make('Nilai Pretest')
-                            ->columns([
-                                'default' => 2,
-                                'xl' => 4
-                            ])
-                            ->schema([
-                                TextEntry::make('poin_a1')
-                                    ->label('Listening'),
-                                TextEntry::make('poin_b1')
-                                    ->label('Strcuture'),
-                                TextEntry::make('poin_c1')
-                                    ->label('Reading'),
-                                TextEntry::make('nilai_akhir1')
-                                    ->label('Nilai Akhir'),
-                            ]),
+                        TextEntry::make('url_pretest')
+                            ->label('Pre-test')
+                            ->state('Buka')
+                            ->url(fn($record) => $record->url_pretest)
+                            ->color(Color::Blue)
+                            ->icon(Heroicon::Link)
+                            ->openUrlInNewTab(),
 
-                        Section::make('Nilai Posttest')
-                            ->columns([
-                                'default' => 2,
-                                'xl' => 4
-                            ])
-                            ->schema([
-                                TextEntry::make('poin_a2')
-                                    ->label('Listening'),
-                                TextEntry::make('poin_b2')
-                                    ->label('Strcuture'),
-                                TextEntry::make('poin_c2')
-                                    ->label('Reading'),
-                                TextEntry::make('nilai_akhir2')
-                                    ->label('Nilai Akhir'),
-                            ]),
+                        TextEntry::make('url_listening')
+                            ->label('Listening')
+                            ->state(fn() => $this->pretest() ? 'Buka' : 'Terkunci')
+                            ->url(fn($record) => $this->pretest() ? $record->url_listening : null)
+                            ->color(fn() => $this->pretest() ? Color::Blue : Color::Gray)
+                            ->icon(fn() => $this->pretest() ? Heroicon::Link : Heroicon::LockClosed)
+                            ->openUrlInNewTab(),
+
+                        TextEntry::make('url_structure')
+                            ->label('Structure')
+                            ->state(fn() => $this->pretest() ? 'Buka' : 'Terkunci')
+                            ->url(fn($record) => $this->pretest() ? $record->url_structure : null)
+                            ->color(fn() => $this->pretest() ? Color::Blue : Color::Gray)
+                            ->icon(fn() => $this->pretest() ? Heroicon::Link : Heroicon::LockClosed)
+                            ->openUrlInNewTab(),
+
+                        TextEntry::make('url_reading')
+                            ->label('Reading')
+                            ->state(fn() => $this->pretest() ? 'Buka' : 'Terkunci')
+                            ->url(fn($record) => $this->pretest() ? $record->url_reading : null)
+                            ->color(fn() => $this->pretest() ? Color::Blue : Color::Gray)
+                            ->icon(fn() => $this->pretest() ? Heroicon::Link : Heroicon::LockClosed)
+                            ->openUrlInNewTab(),
+
+                        TextEntry::make('url_posttest')
+                            ->label('Post-test')
+                            ->state(fn() => $this->pretest() ? 'Buka' : 'Terkunci')
+                            ->url(fn($record) => $this->pretest() ? $record->url_posttest : null)
+                            ->color(fn() => $this->pretest() ? Color::Blue : Color::Gray)
+                            ->icon(fn() => $this->pretest() ? Heroicon::Link : Heroicon::LockClosed)
+                            ->openUrlInNewTab(),
                     ])
             ]);
     }
@@ -118,70 +154,89 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Materi::query())
+            ->query(Jadwal::query()->where('batch_id', $this->record->batch_id)->latest())
             ->columns([
-                TextColumn::make('judul'),
+                TextColumn::make('row_index')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
+                TextColumn::make('mulai')
+                    ->label("Mulai")
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
+                TextColumn::make('tutup')
+                    ->label("Selesai")
+                    ->formatStateUsing(fn($state) => $state->translatedFormat('j F Y H:i')),
+                IconColumn::make('status')
+                    ->boolean(),
+                TextColumn::make('biaya')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->getStateUsing(fn($record) => auth()->user()->peserta?->status == 'mahasiswa' ? $record->biaya_1 : $record->biaya_2),
+                TextColumn::make('kuota'),
+                TextColumn::make('jumlah_peserta')
+                    ->getStateUsing(fn($record) => $record->pesertaJadwal?->count()),
+            ])
+            ->recordActions([
+                Action::make("ambil_tes")
+                    ->label('Ambil Tes')
+                    ->icon(Heroicon::ChevronDoubleRight)
+                    ->visible(
+                        function ($record) {
+                            // 1️⃣ profil wajib lengkap
+                            if (! auth()->user()->profilLengkap()) {
+                                return false;
+                            }
 
-                // PRETEST (selalu aktif)
-                TextColumn::make('url_ujian_1')
-                    ->label('Pretest')
-                    ->url(fn($record) => $record->url_ujian_1)
-                    ->formatStateUsing(fn() => 'Buka')
-                    ->color(Color::Blue)
-                    ->icon(Heroicon::Link)
-                    ->openUrlInNewTab(),
+                            $peserta = auth()->user()->peserta;
 
-                // VIDEO (tergantung sesi)
-                TextColumn::make('url_video')
-                    ->label('Video')
-                    ->formatStateUsing(
-                        fn($record) =>
-                        $this->isSesiUnlocked($record) ? 'Buka' : 'Terkunci'
-                    )
-                    ->url(
-                        fn($record) =>
-                        $this->isSesiUnlocked($record) ? $record->url_video : null
-                    )
-                    ->color(
-                        fn($record) =>
-                        $this->isSesiUnlocked($record) ? Color::Blue : Color::Gray
-                    )
-                    ->icon(Heroicon::Link)
-                    ->openUrlInNewTab(),
+                            // 2️⃣ kuota masih tersedia
+                            $jumlahPeserta = PesertaJadwal::where('jadwal_id', $record->id)->count();
+                            $kuotaMasihAda = $jumlahPeserta < $record->kuota;
 
-                // POSTTEST (tergantung sesi + batch aktif)
-                TextColumn::make('url_ujian_2')
-                    ->label('Posttest')
-                    ->formatStateUsing(
-                        fn($record) =>
-                        $this->isPosttestUnlocked($record) ? 'Buka' : 'Terkunci'
+
+                            // 3️⃣ masih punya tes aktif (jadwal lain)
+                            $punyaTesAktif = PesertaJadwal::where('peserta_id', $peserta->id)
+                                ->whereHas('jadwal', fn($q) => $q->where('tutup', '>', now()))
+                                ->whereNull('selesai')
+                                ->exists();
+
+                            // 4️⃣ sudah pernah ambil jadwal INI (walau sudah selesai)
+                            $sudahAmbilJadwalIni = PesertaJadwal::where('peserta_id', $peserta->id)
+                                ->where('jadwal_id', $record->id)
+                                ->exists();
+
+                            return $this->shortCourse()
+                                && $record->status
+                                && $kuotaMasihAda
+                                && ! $punyaTesAktif
+                                && ! $sudahAmbilJadwalIni;
+                        }
                     )
-                    ->url(
-                        fn($record) =>
-                        $this->isPosttestUnlocked($record) ? $record->url_ujian_2 : null
-                    )
-                    ->color(
-                        fn($record) =>
-                        $this->isPosttestUnlocked($record) ? Color::Blue : Color::Gray
-                    )
-                    ->icon(Heroicon::Link)
-                    ->openUrlInNewTab(),
+                    ->action(function ($data, $record, $livewire) {
+                        PesertaJadwal::create([
+                            'peserta_id' => auth()->user()->peserta?->id,
+                            'jadwal_id' => $record->id,
+                            'bukti_bayar' => $this->record->bukti_bayar
+                        ]);
+
+                        auth()->user()->peserta->load('pesertaJadwal');
+
+                        Notification::make()
+                            ->success()
+                            ->title('Jadwal tes berhasil diambil.')
+                            ->send();
+                    })
+                    ->requiresConfirmation()
             ]);
     }
 
-    protected function isSesiUnlocked($materi): bool
+    protected function pretest(): bool
     {
-        return match ($materi->jenis) {
-            'listening' => $this->record->poin_a1 != 0,
-            'structure' => $this->record->poin_b1 != 0,
-            'reading' => $this->record->poin_c1 != 0,
-            default => false,
-        };
+        return $this->record->pretest != 0;
     }
 
-    protected function isPosttestUnlocked($materi): bool
+    protected function shortCourse(): bool
     {
-        return $this->isSesiUnlocked($materi)
-            && $this->record->batch->status === true;
+        return $this->record->peserta?->short_course != null;
     }
 }

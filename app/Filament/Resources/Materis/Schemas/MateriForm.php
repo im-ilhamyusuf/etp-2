@@ -15,22 +15,24 @@ class MateriForm
             ->components([
                 Section::make('Formulir Materi')
                     ->schema([
-                        Select::make('jenis')
-                            ->options(['listening' => 'Listening', 'structure' => 'Structure', 'reading' => 'Reading'])
-                            ->searchable()
-                            ->required(),
-                        TextInput::make('judul')
-                            ->required(),
-                        TextInput::make('url_video')
-                            ->label('URL Video')
+                        TextInput::make('url_listening')
+                            ->label('URL Listening')
                             ->url()
                             ->required(),
-                        TextInput::make('url_ujian_1')
-                            ->label("URL Ujian 1")
+                        TextInput::make('url_structure')
+                            ->label('URL Structure')
                             ->url()
                             ->required(),
-                        TextInput::make('url_ujian_2')
-                            ->label("URL Ujian 2")
+                        TextInput::make('url_reading')
+                            ->label('URL Reading')
+                            ->url()
+                            ->required(),
+                        TextInput::make('url_pretest')
+                            ->label('URL Pretest')
+                            ->url()
+                            ->required(),
+                        TextInput::make('url_posttest')
+                            ->label('URL Posttest')
                             ->url()
                             ->required(),
                     ])

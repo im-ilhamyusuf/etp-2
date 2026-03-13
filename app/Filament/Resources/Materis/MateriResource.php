@@ -21,8 +21,6 @@ class MateriResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLightBulb;
 
-    protected static ?string $recordTitleAttribute = 'judul';
-
     protected static string|UnitEnum|null $navigationGroup = 'Short Course';
 
     protected static ?int $navigationSort = 1;

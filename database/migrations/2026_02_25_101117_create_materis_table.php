@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::create('materis', function (Blueprint $table) {
             $table->id();
-            $table->enum("jenis", [
-                "listening",
-                "structure",
-                "reading",
-            ]);
-            $table->string('judul');
-            $table->string('url_video');
-            $table->string('url_ujian_1');
-            $table->string('url_ujian_2');
+            $table->text('url_listening');
+            $table->text('url_structure');
+            $table->text('url_reading');
+            $table->text('url_pretest');
+            $table->text('url_posttest');
             $table->timestamps();
         });
     }

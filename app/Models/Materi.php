@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Materi extends Model
 {
-    protected $fillable = ['jenis', 'judul', 'url_video', 'url_ujian_1', 'url_ujian_2'];
+    protected $fillable = [
+        'url_listening',
+        'url_structure',
+        'url_reading',
+        'url_pretest',
+        'url_posttest'
+    ];
 }

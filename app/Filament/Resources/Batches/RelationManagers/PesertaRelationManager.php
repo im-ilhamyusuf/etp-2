@@ -5,14 +5,7 @@ namespace App\Filament\Resources\Batches\RelationManagers;
 use App\Filament\Resources\Batches\Pages\ViewBatch;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\AssociateAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\ImageEntry;
@@ -26,7 +19,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -85,10 +77,10 @@ class PesertaRelationManager extends RelationManager
                     ->label('Status Validasi')
                     ->getStateUsing(fn($record) => $record->validasi != null)
                     ->boolean(),
-                TextColumn::make('Pretest')
-                    ->getStateUsing(fn($record) => "$record->poin_a1,$record->poin_b1,$record->poin_c1,$record->nilai_akhir1"),
-                TextColumn::make('Posttest')
-                    ->getStateUsing(fn($record) => "$record->poin_a2,$record->poin_b2,$record->poin_c2,$record->nilai_akhir2"),
+                TextColumn::make('pretest')
+                    ->label('Pre-test'),
+                TextColumn::make('posttest')
+                    ->label('Post-test'),
                 IconColumn::make('peserta.status_short_course')
                     ->label('Short Course')
                     ->boolean()
@@ -119,14 +111,8 @@ class PesertaRelationManager extends RelationManager
                         ->modalWidth(Width::ExtraLarge)
                         ->mountUsing(function (Schema $form, $record) {
                             $form->fill([
-                                'poin_a1' => $record->poin_a1,
-                                'poin_b1' => $record->poin_b1,
-                                'poin_c1' => $record->poin_c1,
-                                'nilai_akhir1' => $record->nilai_akhir1,
-                                'poin_a2' => $record->poin_a2,
-                                'poin_b2' => $record->poin_b2,
-                                'poin_c2' => $record->poin_c2,
-                                'nilai_akhir2' => $record->nilai_akhir2,
+                                'pretest' => $record->pretest,
+                                'posttest' => $record->posttest,
                                 'short_course' => $record->peserta?->short_course,
                             ]);
                         })
@@ -156,41 +142,15 @@ class PesertaRelationManager extends RelationManager
                             ]),
 
                             Group::make([
-                                Section::make('Pretest')
-                                    ->schema([
-                                        TextInput::make('poin_a1')
-                                            ->label("Listening")
-                                            ->numeric(),
-                                        TextInput::make('poin_b1')
-                                            ->label("Structure")
-                                            ->numeric(),
-                                        TextInput::make('poin_c1')
-                                            ->label("Reading")
-                                            ->numeric(),
-                                        TextInput::make('nilai_akhir1')
-                                            ->label("Nilai Akhir")
-                                            ->numeric(),
-                                    ]),
-
-                                Section::make('Posttest')
-                                    ->schema([
-                                        TextInput::make('poin_a2')
-                                            ->label("Listening")
-                                            ->numeric(),
-                                        TextInput::make('poin_b2')
-                                            ->label("Structure")
-                                            ->numeric(),
-                                        TextInput::make('poin_c2')
-                                            ->label("Reading")
-                                            ->numeric(),
-                                        TextInput::make('nilai_akhir2')
-                                            ->label("Nilai Akhir")
-                                            ->numeric(),
-                                    ]),
-
                                 Section::make('Short Course')
                                     ->schema([
-                                        DateTimePicker::make('short_course')
+                                        TextInput::make('pretest')
+                                            ->label('Pre-test')
+                                            ->numeric(),
+                                        TextInput::make('posttest')
+                                            ->label('Post-test')
+                                            ->numeric(),
+                                        DateTimePicker::make('short_course'),
                                     ])
                             ])
                                 ->inlineLabel()
@@ -199,14 +159,8 @@ class PesertaRelationManager extends RelationManager
                         ->action(function ($record, $data) {
 
                             $record->update([
-                                'poin_a1' => $data['poin_a1'],
-                                'poin_b1' => $data['poin_b1'],
-                                'poin_c1' => $data['poin_c1'],
-                                'nilai_akhir1' => $data['nilai_akhir1'],
-                                'poin_a2' => $data['poin_a2'],
-                                'poin_b2' => $data['poin_b2'],
-                                'poin_c2' => $data['poin_c2'],
-                                'nilai_akhir2' => $data['nilai_akhir2'],
+                                'pretest' => $data['pretest'],
+                                'posttest' => $data['posttest'],
                             ]);
 
                             // update relasi peserta

@@ -17,14 +17,8 @@ return new class extends Migration
             $table->foreignId('batch_id')->constrained()->cascadeOnDelete();
             $table->string('bukti_bayar')->nullable();
             $table->dateTime('validasi')->nullable();
-            $table->integer('poin_a1')->default(0);
-            $table->integer('poin_b1')->default(0);
-            $table->integer('poin_c1')->default(0);
-            $table->float('nilai_akhir1')->default(0);
-            $table->integer('poin_a2')->default(0);
-            $table->integer('poin_b2')->default(0);
-            $table->integer('poin_c2')->default(0);
-            $table->float('nilai_akhir2')->default(0);
+            $table->float('pretest')->default(0);
+            $table->float('posttest')->default(0);
             $table->timestamps();
         });
     }

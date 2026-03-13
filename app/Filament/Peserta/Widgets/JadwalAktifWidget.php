@@ -3,7 +3,9 @@
 namespace App\Filament\Peserta\Widgets;
 
 use App\Models\Jadwal;
+use App\Models\Peserta;
 use App\Models\PesertaJadwal;
+use App\Models\User;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -66,7 +68,6 @@ class JadwalAktifWidget extends TableWidget
                             $jumlahPeserta = PesertaJadwal::where('jadwal_id', $record->id)->count();
                             $kuotaMasihAda = $jumlahPeserta < $record->kuota;
 
-
                             // 3️⃣ masih punya tes aktif (jadwal lain)
                             $punyaTesAktif = PesertaJadwal::where('peserta_id', $peserta->id)
                                 ->whereHas('jadwal', fn($q) => $q->where('tutup', '>', now()))
@@ -78,7 +79,8 @@ class JadwalAktifWidget extends TableWidget
                                 ->where('jadwal_id', $record->id)
                                 ->exists();
 
-                            return $kuotaMasihAda
+                            return $this->shortCourse()
+                                && $kuotaMasihAda
                                 && ! $punyaTesAktif
                                 && ! $sudahAmbilJadwalIni;
                         }
@@ -91,7 +93,7 @@ class JadwalAktifWidget extends TableWidget
                             ->directory('peserta')
                             ->required()
                     ])
-                    ->action(function ($data, $record, $livewire) {
+                    ->action(function ($data, $record) {
                         PesertaJadwal::create([
                             'peserta_id' => auth()->user()->peserta?->id,
                             'jadwal_id' => $record->id,
@@ -109,5 +111,10 @@ class JadwalAktifWidget extends TableWidget
                     ->modalWidth(Width::Medium)
             ])
             ->toolbarActions([]);
+    }
+
+    protected function shortCourse(): bool
+    {
+        return auth()->user()->peserta?->short_course !== null;
     }
 }

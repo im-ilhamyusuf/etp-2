@@ -18,49 +18,42 @@ class MaterisTable
     {
         return $table
             ->columns([
-                TextColumn::make('row_index')
-                    ->label("#")
-                    ->rowIndex()
-                    ->width('20px'),
-                TextColumn::make('jenis')
-                    ->badge()
-                    ->color(function ($record) {
-                        if ($record->jenis == 'listening') {
-                            return Color::Red;
-                        } else if ($record->jenis == 'structure') {
-                            return Color::Yellow;
-                        } else {
-                            return Color::Green;
-                        }
-                    })
-                    ->width('150px'),
-                TextColumn::make('judul'),
-                TextColumn::make('url_video')
-                    ->label('URL Video')
-                    ->url(fn($record) => $record->url_video)
+                TextColumn::make('url_listening')
+                    ->label('URL Listening')
+                    ->url(fn($record) => $record->url_listening)
+                    ->openUrlInNewTab()
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
+                    ->color(Color::Blue),
+                TextColumn::make('url_structure')
+                    ->label('URL Structure')
+                    ->url(fn($record) => $record->url_structure)
+                    ->openUrlInNewTab()
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
+                    ->color(Color::Blue),
+                TextColumn::make('url_reading')
+                    ->label('URL Reading')
+                    ->url(fn($record) => $record->url_reading)
+                    ->openUrlInNewTab()
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
+                    ->color(Color::Blue),
+                TextColumn::make('url_pretest')
+                    ->label('URL Pretest')
+                    ->url(fn($record) => $record->url_pretest)
+                    ->openUrlInNewTab()
+                    ->formatStateUsing(fn() => 'Buka')
+                    ->icon(Heroicon::Link)
+                    ->color(Color::Blue),
+                TextColumn::make('url_posttest')
+                    ->label('URL Posttest')
+                    ->url(fn($record) => $record->url_posttest)
                     ->openUrlInNewTab()
                     ->formatStateUsing(fn() => 'Buka')
                     ->icon(Heroicon::Link)
                     ->color(Color::Blue)
-                    ->width('150px'),
-                TextColumn::make('url_ujian_1')
-                    ->label('URL Ujian 1')
-                    ->url(fn($record) => $record->url_ujian)
-                    ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Buka')
-                    ->icon(Heroicon::Link)
-                    ->color(Color::Blue)
-                    ->width('150px'),
-                TextColumn::make('url_ujian_2')
-                    ->label('URL Ujian 2')
-                    ->url(fn($record) => $record->url_ujian)
-                    ->openUrlInNewTab()
-                    ->formatStateUsing(fn() => 'Buka')
-                    ->icon(Heroicon::Link)
-                    ->color(Color::Blue)
-                    ->width('150px'),
             ])
-            ->defaultSort('jenis')
             ->filters([
                 //
             ])
@@ -70,10 +63,6 @@ class MaterisTable
                     DeleteAction::make()
                 ])
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }
