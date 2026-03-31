@@ -165,7 +165,7 @@ class UjianController extends Controller
             'sesi' => $sesi,
             'bank_soal' => [
                 'id'     => $bankSoal->id,
-                'nama'   => $bankSoal->nama,
+                'judul'   => $bankSoal->judul,
                 'jenis'  => $bankSoal->jenis,
                 'gambar' => $bankSoal->gambar
                     ? asset('storage/' . $bankSoal->gambar)
