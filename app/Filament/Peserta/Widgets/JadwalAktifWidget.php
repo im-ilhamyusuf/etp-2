@@ -3,10 +3,7 @@
 namespace App\Filament\Peserta\Widgets;
 
 use App\Models\Jadwal;
-use App\Models\Peserta;
 use App\Models\PesertaJadwal;
-use App\Models\User;
-use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
@@ -22,10 +19,21 @@ class JadwalAktifWidget extends TableWidget
     protected static ?int $sort = 4;
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?string $heading = 'Jadwal Khusus';
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => Jadwal::aktif()->khusus())
+            ->query(function (): Builder {
+                $query = Jadwal::aktif()->khusus();
+
+                if (! $this->shortCourse()) {
+                    // kalau bukan short course, kosongkan hasil
+                    $query->whereRaw('1 = 0');
+                }
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('row_index')
                     ->rowIndex()
@@ -79,8 +87,7 @@ class JadwalAktifWidget extends TableWidget
                                 ->where('jadwal_id', $record->id)
                                 ->exists();
 
-                            return $this->shortCourse()
-                                && $kuotaMasihAda
+                            return $kuotaMasihAda
                                 && ! $punyaTesAktif
                                 && ! $sudahAmbilJadwalIni;
                         }

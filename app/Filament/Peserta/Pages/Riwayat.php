@@ -79,6 +79,18 @@ class Riwayat extends Page implements HasTable
 
                 TextColumn::make('nilai_akhir')
                     ->label('Nilai Akhir'),
+
+                TextColumn::make('sertifikat')
+                    ->label('Sertifikat')
+                    ->state(fn($record) => filled($record->selesai) ? 'Unduh' : '')
+                    ->icon(fn($record) => filled($record->selesai) ? Heroicon::ArrowDownTray : null)
+                    ->color(Color::Blue)
+                    ->url(
+                        fn($record) => filled($record->selesai)
+                            ? route('ujian-sertifikat', ['peserta_jadwal_id' => $record->id])
+                            : null
+                    )
+                    ->openUrlInNewTab()
             ])
             ->emptyStateHeading('Belum Ada Riwayat')
             ->emptyStateDescription('Riwayat tes akan muncul di sini setelah Anda mengikuti tes.');

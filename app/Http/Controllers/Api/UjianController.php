@@ -434,7 +434,7 @@ class UjianController extends Controller
             'nama' => $peserta->user?->name,
             'tempat_lahir' => $peserta->tempat_lahir,
             'tanggal_lahir' => $peserta->tanggal_lahir->translatedFormat('F jS, Y'),
-            'nomor_tes' => $peserta->no_peserta . $jadwal->mulai->format('Ymd'),
+            'nomor_tes' => $peserta->no_peserta,
             'tanggal_tes' => $jadwal->mulai->translatedFormat('F jS, Y'),
             'poin_a' => $pesertaJadwal->poin_a,
             'poin_b' => $pesertaJadwal->poin_b,

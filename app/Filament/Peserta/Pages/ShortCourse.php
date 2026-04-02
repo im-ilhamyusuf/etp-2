@@ -11,6 +11,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Illuminate\Support\HtmlString;
 
 class ShortCourse extends Page implements HasTable
 {
@@ -53,6 +54,22 @@ class ShortCourse extends Page implements HasTable
                     ->label('Status Jadwal')
                     ->boolean()
                     ->getStateUsing(fn($record) => $record->batch->status),
+
+                TextColumn::make('bukti_bayar')
+                    ->state('Lihat')
+                    ->color('primary')
+                    ->icon(Heroicon::Eye)
+                    ->action(
+                        Action::make('lihatBukti')
+                            ->modalHeading('Bukti Pembayaran')
+                            ->modalWidth('sm')
+                            ->modalContent(fn($record) => new HtmlString(
+                                '<img src="' . asset('storage/' . $record->bukti_bayar) . '" class="w-full rounded-lg">'
+                            ))
+                            ->modalFooterActions()
+                            ->modalSubmitAction(false)
+                            ->modalCancelAction(false)
+                    ),
 
                 IconColumn::make('status_validasi')
                     ->label('Status Validasi')

@@ -28,7 +28,9 @@ class Batch extends Model
 
     public function scopeAktif($query)
     {
-        return $query->where('tutup', '>=', now());
+        return $query
+            ->where('mulai', '<=', now())
+            ->where('tutup', '>=', now());
     }
 
     public function pesertaBatch()

@@ -194,22 +194,16 @@ class ShortCourseDetail extends Page implements HasInfolists, HasTable
                             $kuotaMasihAda = $jumlahPeserta < $record->kuota;
 
 
-                            // 3️⃣ masih punya tes aktif (jadwal lain)
-                            $punyaTesAktif = PesertaJadwal::where('peserta_id', $peserta->id)
-                                ->whereHas('jadwal', fn($q) => $q->where('tutup', '>', now()))
-                                ->whereNull('selesai')
-                                ->exists();
-
-                            // 4️⃣ sudah pernah ambil jadwal INI (walau sudah selesai)
-                            $sudahAmbilJadwalIni = PesertaJadwal::where('peserta_id', $peserta->id)
-                                ->where('jadwal_id', $record->id)
+                            $sudahAmbilDiBatchIni = PesertaJadwal::where('peserta_id', $peserta->id)
+                                ->whereHas('jadwal', function ($q) use ($record) {
+                                    $q->where('batch_id', $record->batch_id);
+                                })
                                 ->exists();
 
                             return $this->shortCourse()
                                 && $record->status
                                 && $kuotaMasihAda
-                                && ! $punyaTesAktif
-                                && ! $sudahAmbilJadwalIni;
+                                && ! $sudahAmbilDiBatchIni;
                         }
                     )
                     ->action(function ($data, $record, $livewire) {

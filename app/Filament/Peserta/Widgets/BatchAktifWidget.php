@@ -5,7 +5,6 @@ namespace App\Filament\Peserta\Widgets;
 use App\Models\Batch;
 use App\Models\PesertaBatch;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
@@ -23,7 +22,15 @@ class BatchAktifWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => Batch::aktif())
+            ->query(function (): Builder {
+                $query = Batch::aktif();
+
+                if (! auth()->user()->profilLengkap()) {
+                    $query->whereRaw('1 = 0');
+                }
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('row_index')
                     ->rowIndex()
@@ -55,11 +62,6 @@ class BatchAktifWidget extends TableWidget
                     ->icon(Heroicon::ChevronDoubleRight)
                     ->visible(
                         function ($record) {
-                            // 1️⃣ profil wajib lengkap
-                            if (! auth()->user()->profilLengkap()) {
-                                return false;
-                            }
-
                             $peserta = auth()->user()->peserta;
 
                             // sudah pernah ambil jadwal INI (walau sudah selesai)
@@ -67,7 +69,13 @@ class BatchAktifWidget extends TableWidget
                                 ->where('batch_id', $record->id)
                                 ->exists();
 
-                            return !$sudahAmbilJadwalIni;
+                            // masih punya short course aktif (batch lain)
+                            $punyaShortCourseAktif = PesertaBatch::where('peserta_id', $peserta->id)
+                                ->whereHas('batch', fn($q) => $q->where('tutup', '>', now()))
+                                ->exists();
+
+                            return !$sudahAmbilJadwalIni
+                                && !$punyaShortCourseAktif;
                         }
                     )
                     ->schema([
@@ -78,7 +86,7 @@ class BatchAktifWidget extends TableWidget
                             ->directory('peserta')
                             ->required()
                     ])
-                    ->action(function ($data, $record, $livewire) {
+                    ->action(function ($data, $record) {
                         PesertaBatch::create([
                             'peserta_id' => auth()->user()->peserta?->id,
                             'batch_id' => $record->id,
