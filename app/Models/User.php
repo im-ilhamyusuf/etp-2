@@ -80,4 +80,13 @@ class User extends Authenticatable implements FilamentUser
             default   => false,
         };
     }
+
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            Peserta::create([
+                'user_id' => $user->id,
+            ]);
+        });
+    }
 }

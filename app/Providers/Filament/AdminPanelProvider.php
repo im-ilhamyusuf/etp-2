@@ -24,11 +24,9 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('admin')
             ->path('admin')
-            ->login(false)
-            ->authGuard('web')
+            ->login()
             ->databaseNotifications()
             ->spa()
             ->colors([
@@ -60,8 +58,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                'auth',
-                'role:admin'
             ])
             ->authMiddleware([
                 Authenticate::class,

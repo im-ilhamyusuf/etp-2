@@ -7,26 +7,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('after.login');
+        $user = auth()->user();
+
+        return redirect()->to(match ($user->role) {
+            'admin' => '/admin',
+            'user'  => '/peserta',
+            default => '/',
+        });
     }
 
-    return redirect()->route('login');
+    return redirect('/peserta/login');
 });
 
 // ujian
 Route::get('/ujian/sertifikat', [UjianController::class, 'sertifikat'])->name('ujian-sertifikat');
-
-Route::middleware('guest')->group(function () {
-    Route::get('/login', Login::class)->name('login');
-    Route::get('/register', Register::class);
-});
-
-Route::get('/after-login', function () {
-    $user = auth()->user();
-
-    return match ($user->role) {
-        'admin'   => redirect('/admin'),
-        'user' => redirect('/peserta'),
-        default   => abort(403),
-    };
-})->name('after.login')->middleware('auth');

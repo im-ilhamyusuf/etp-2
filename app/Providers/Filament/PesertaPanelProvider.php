@@ -29,8 +29,8 @@ class PesertaPanelProvider extends PanelProvider
         return $panel
             ->id('peserta')
             ->path('peserta')
-            ->login(false)
-            ->authGuard('web')
+            ->login()
+            ->registration()
             ->spa()
             ->colors([
                 'primary' => Color::Blue,
@@ -56,8 +56,6 @@ class PesertaPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                'auth',
-                'role:user'
             ])
             ->authMiddleware([
                 Authenticate::class,
