@@ -16,8 +16,6 @@ Route::get('/', function () {
 // ujian
 Route::get('/ujian/sertifikat', [UjianController::class, 'sertifikat'])->name('ujian-sertifikat');
 
-http: //127.0.0.1:8000/ujian/sertifikat?peserta_jadwal_id=18
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
     Route::get('/register', Register::class);

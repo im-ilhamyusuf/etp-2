@@ -17,7 +17,7 @@ class Login extends Component
             'password' => 'required',
         ]);
 
-        if (! Auth::attempt([
+        if (! Auth::guard('web')->attempt([
             'email' => $this->email,
             'password' => $this->password,
         ])) {
