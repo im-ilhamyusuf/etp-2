@@ -79,6 +79,9 @@
                     <a class="btn-get-started" href="{{ route('filament.peserta.auth.login') }}">
                         Login
                     </a>
+                    <a class="btn-get-started ms-2" href="{{ route('filament.peserta.auth.register') }}">
+                        Register
+                    </a>
                 @endauth
             </div>
           </div>
