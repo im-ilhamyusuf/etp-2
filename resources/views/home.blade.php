@@ -28,7 +28,8 @@
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
       <span class="logo d-flex align-items-center me-auto">
-        <h1 class="sitename">ETP</h1>
+        <img src="img/logo-itg.png" alt="" srcset="">
+        <h1 class="sitename">ETP ITG</h1>
       </span>
 
       <nav id="navmenu" class="navmenu">
@@ -98,7 +99,11 @@
         <h2>About</h2>
         <p>ETP is a TOEFL learning platform designed to help users improve their English skills in a structured and efficient manner.</p>
         <p>Through a pretest and posttest system, users can assess their initial abilities, participate in short lessons, and see real-time score improvements. Equipped with TOEFL test simulations, the ETP provides a practice experience that closely approximates the actual exam.</p>
-      </div><!-- End Section Title -->
+        <br>
+        <p>User Guide: <a href="https://drive.google.com/drive/folders/10TRjOIThlcBV2TL5FQyBAqZGRQpIn6eB?usp=sharing" target="_blank" rel="noopener noreferrer">Link</a></p>
+        <p>More Information: +62 857-1760-6629</p>
+      </div>
+      <!-- End Section Title -->
 
       <div class="container">
 
