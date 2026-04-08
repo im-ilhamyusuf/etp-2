@@ -40,13 +40,18 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted"
-        href="{{ auth()->check()
-                ? route('filament.peserta.pages.dashboard')
-                : route('filament.peserta.auth.login') }}">
-
-            {{ auth()->check() ? 'Dashboard' : 'Login' }}
+      @auth
+        <a class="btn-getstarted"
+        href="{{ auth()->user()->role === 'admin'
+                ? route('filament.admin.pages.dashboard')
+                : route('filament.peserta.pages.dashboard') }}">
+            Dashboard
         </a>
+    @else
+        <a class="btn-getstarted" href="{{ route('filament.peserta.auth.login') }}">
+            Login
+        </a>
+    @endauth
 
     </div>
   </header>
@@ -62,13 +67,18 @@
             <h1>English Test for Proficiency (ETP)</h1>
             <p>Facilitates TOEFL learning in a concise and structured manner, equipped with pretests, posttests, and test simulations to measure and improve English language skills effectively.</p>
             <div class="d-flex">
-              <a class="btn-get-started"
-                href="{{ auth()->check()
-                        ? route('filament.peserta.pages.dashboard')
-                        : route('filament.peserta.auth.login') }}">
-
-                    {{ auth()->check() ? 'Dashboard' : 'Login' }}
-                </a>
+              @auth
+                    <a class="btn-get-started"
+                    href="{{ auth()->user()->role === 'admin'
+                            ? route('filament.admin.pages.dashboard')
+                            : route('filament.peserta.pages.dashboard') }}">
+                        Dashboard
+                    </a>
+                @else
+                    <a class="btn-get-started" href="{{ route('filament.peserta.auth.login') }}">
+                        Login
+                    </a>
+                @endauth
             </div>
           </div>
           <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="100">
