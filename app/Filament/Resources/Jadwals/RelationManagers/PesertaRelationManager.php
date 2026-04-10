@@ -24,6 +24,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 
 class PesertaRelationManager extends RelationManager
@@ -95,7 +96,37 @@ class PesertaRelationManager extends RelationManager
             ->filters([
                 //
             ])
-            ->headerActions([])
+            ->headerActions([
+                Action::make('selesaikanSemuaUjian')
+                    ->label('Selesaikan Semua Ujian')
+                    ->icon(Heroicon::CheckCircle)
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Selesaikan Semua Ujian?')
+                    ->modalDescription('Semua ujian yang belum selesai akan diselesaikan dan histori jawaban akan dihapus. Tindakan ini tidak dapat dibatalkan.')
+                    ->action(function () {
+                        $jadwal = $this->getOwnerRecord();
+
+                        foreach ($jadwal->pesertaJadwal as $pesertaJadwal) {
+
+                            DB::table('peserta_soals')
+                                ->where('peserta_id', $pesertaJadwal->peserta_id)
+                                ->delete();
+
+                            if (!$pesertaJadwal->selesai) {
+                                $pesertaJadwal->update([
+                                    'selesai' => now(),
+                                ]);
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Semua ujian peserta berhasil diselesaikan dan histori dihapus.')
+                            ->success()
+                            ->send();
+                    })
+            ])
             ->recordActions([
                 ActionGroup::make([
                     Action::make('validasi')
