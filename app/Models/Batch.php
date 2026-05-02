@@ -29,7 +29,6 @@ class Batch extends Model
     public function scopeAktif($query)
     {
         return $query
-            ->where('mulai', '<=', now())
             ->where('tutup', '>=', now());
     }
 
