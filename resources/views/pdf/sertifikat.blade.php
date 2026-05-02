@@ -84,12 +84,12 @@
                 <td>: {{ $tempat_lahir }}, {{ $tanggal_lahir }}</td>
             </tr>
             <tr>
-                <td>Test Number</td>
+                <td>Certificate Number</td>
                 <td>: {{ $nomor_tes }}</td>
             </tr>
         </table>
 
-        <p>has successfully taken The English Test for Proficiency (ETP) conducted on {{ $tanggal_tes }} with the following score:</p>
+        <p>has successfully taken the English Test for Proficiency (ETP) conducted on {{ $tanggal_tes }} with the following score:</p>
 
         <table border="0" style="margin-top: 5px">
             <tr>
@@ -106,7 +106,7 @@
             </tr>
             <tr>
                 <td>Total Score</td>
-                <td>: {{ $nilai_akhir }}</td>
+                <td>: {{ $nilai_akhir }} / CEFR Level: {{ $level }} ({{ $keterangan }})</td>
             </tr>
             <tr>
                 <td>Valid Until</td>
@@ -123,7 +123,7 @@
                     Issued in Garut on {{ $tanggal_tes }}<br>
                     Authorized by
                     <div>
-                        <img src="data:image/png;base64, {!! $ttd !!}" width="75px" height="75px" style="padding: 5px;">
+                        <img src="{{ $ttd }}" width="75px" height="75px" style="padding: 5px;">
                     </div>
                     Reski Ramadhani, S.Pd., M.Hum.<br>
                     NIDN. 0405029501

@@ -25,6 +25,8 @@ return new class extends Migration
             $table->integer('poin_b')->default(0);
             $table->integer('poin_c')->default(0);
             $table->float('nilai_akhir')->default(0);
+            $table->string('kode')->nullable();
+            $table->string('nomor')->nullable();
             $table->timestamps();
         });
     }
