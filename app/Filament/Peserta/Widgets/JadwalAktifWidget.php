@@ -25,7 +25,7 @@ class JadwalAktifWidget extends TableWidget
     {
         return $table
             ->query(function (): Builder {
-                $query = Jadwal::aktif()->khusus();
+                $query = Jadwal::where('mulai', '>=', now())->khusus();
 
                 if (! $this->shortCourse()) {
                     // kalau bukan short course, kosongkan hasil
