@@ -29,6 +29,7 @@ class PesertaPanelProvider extends PanelProvider
         return $panel
             ->id('peserta')
             ->path('peserta')
+            ->default()
             ->login()
             ->registration()
             ->spa()

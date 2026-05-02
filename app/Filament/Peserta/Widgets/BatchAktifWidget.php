@@ -23,7 +23,7 @@ class BatchAktifWidget extends TableWidget
     {
         return $table
             ->query(function (): Builder {
-                $query = Batch::aktif();
+                $query = Batch::where('mulai', '>=', now());
 
                 if (! auth()->user()->profilLengkap()) {
                     $query->whereRaw('1 = 0');
