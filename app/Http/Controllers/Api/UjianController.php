@@ -95,30 +95,35 @@ class UjianController extends Controller
 
         // 5. set mulai ujian (sekali saja)
         // Cek dan isi kode & number jika masih null
-        if (is_null($pesertaJadwal->kode) || is_null($pesertaJadwal->number)) {
-            $prefix = 'ETP/LP2B-ITG/2026/';
+        // if (is_null($pesertaJadwal->kode) || is_null($pesertaJadwal->number)) {
+        //     $prefix = 'ETP/LP2B-ITG/2026/';
 
-            // Ambil number tertinggi yang sudah ada, lalu increment
-            $lastNumber = PesertaJadwal::whereNotNull('number')
-                ->max('number');
+        //     // Ambil number tertinggi yang sudah ada, lalu increment
+        //     $lastNumber = PesertaJadwal::whereNotNull('number')
+        //         ->max('number');
 
-            $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
+        //     $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
 
-            // Format jadi 4 digit, misal: 0001, 0002, dst
-            $formattedNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        //     // Format jadi 4 digit, misal: 0001, 0002, dst
+        //     $formattedNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-            $pesertaJadwal->update([
-                'kode'      => $prefix,
-                'nomor'    => $nextNumber,
-                'mulai'     => $now,
-                'sesi_soal' => 1,
-            ]);
-        } else {
-            $pesertaJadwal->update([
-                'mulai'     => $now,
-                'sesi_soal' => 1,
-            ]);
-        }
+        //     $pesertaJadwal->update([
+        //         'kode'      => $prefix,
+        //         'nomor'    => $nextNumber,
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // } else {
+        //     $pesertaJadwal->update([
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // }
+
+        $pesertaJadwal->update([
+            'mulai'     => $now,
+            'sesi_soal' => 1,
+        ]);
 
         return response()->json([
             'success'     => true,
@@ -458,7 +463,7 @@ class UjianController extends Controller
             'nama' => $peserta->user?->name,
             'tempat_lahir' => $peserta->tempat_lahir,
             'tanggal_lahir' => $peserta->tanggal_lahir->translatedFormat('F jS, Y'),
-            'nomor_tes' => $pesertaJadwal->kode . $pesertaJadwal->nomor,
+            'nomor_tes' => $pesertaJadwal->kode . $pesertaJadwal->id,
             'tanggal_tes' => $jadwal->mulai->translatedFormat('F jS, Y'),
             'poin_a' => $pesertaJadwal->poin_a,
             'poin_b' => $pesertaJadwal->poin_b,
@@ -470,19 +475,20 @@ class UjianController extends Controller
             'keterangan' => $levelData['keterangan'],
         ];
 
-        $responseDigitalSign = Http::withoutVerifying()->post('https://api-esign.itg.ac.id/api/document', [
+        $information = [];
+        $information[] = ['Name' => $data['nama']];
+        $information[] = ['Place & Date of Birth' => $data['tempat_lahir'] . ', ' . $data['tanggal_lahir']];
+        $information[] = ['Test Number'                      => $data['nomor_tes']];
+        $information[] = ['Listening Comprehension'          => $data['poin_a']];
+        $information[] = ['Structure and Written Expression' => $data['poin_b']];
+        $information[] = ['Reading Comprehension'            => $data['poin_c']];
+        $information[] = ['Total Score'                      => $data['nilai_akhir']];
+        $information[] = ['Valid Until'                      => $data['berlaku_sampai']];
+
+        $responseDigitalSign = Http::post('http://api-esign.itg.ac.id/api/document', [
             'subject'     => 'Sertifikat ETP',
-            'signer'      => 'Reski Ramadhani, S.Pd., M.Hum.',
-            'information' => [
-                ['Name'                             => $data['nama']],
-                ['Place & Date of Birth'            => $data['tempat_lahir'] . ', ' . $data['tanggal_lahir']],
-                ['Test Number'                      => $data['nomor_tes']],
-                ['Listening Comprehension'          => $data['poin_a']],
-                ['Structure and Written Expression' => $data['poin_b']],
-                ['Reading Comprehension'            => $data['poin_c']],
-                ['Total Score'                      => $data['nilai_akhir']],
-                ['Valid Until'                      => $data['berlaku_sampai']],
-            ],
+            // 'signer'      => 'Reski Ramadhani, S.Pd., M.Hum.',
+            'information' => $information
         ]);
 
         if ($responseDigitalSign->failed()) {

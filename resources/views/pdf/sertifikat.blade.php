@@ -72,7 +72,7 @@
     </div>
 
     <div class="container">
-        <p>Head of <i>Lembaga Pengembangan Pendidikan, Bahasa dan MBKM Institut Teknologi Garut<i> Certifies that :</p>
+        <p>Head of <i>Lembaga Pengembangan Pendidikan, Bahasa dan MBKM Institut Teknologi Garut</i>  certifies that :</p>
 
         <table border="0" style="margin-top: 5px; margin-bottom: 5px">
             <tr>
