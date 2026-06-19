@@ -8,6 +8,8 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class PesertasTable
 {
@@ -39,6 +41,10 @@ class PesertasTable
                     ->width('120px'),
                 ImageColumn::make('foto')
                     ->disk('public'),
+                TextColumn::make('status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => ucwords($state))
+                    ->width('120px'),
                 TextColumn::make('nim')
                     ->label("NIM")
                     ->searchable()
@@ -49,7 +55,10 @@ class PesertasTable
                     ->width('130px'),
             ])
             ->filters([
-                //
+                Filter::make('sudah_short_course')
+                    ->label('Sudah Short Course')
+                    ->query(fn(Builder $query) => $query->whereNotNull('short_course'))
+                    ->toggle(),
             ])
             ->recordActions([
                 ActionGroup::make([

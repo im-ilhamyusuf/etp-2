@@ -26,6 +26,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class PesertaRelationManager extends RelationManager
 {
@@ -47,6 +49,10 @@ class PesertaRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('no_peserta')
             ->columns([
+                TextColumn::make('no_urut')
+                    ->label('#')
+                    ->rowIndex()
+                    ->width('60px'),
                 TextColumn::make('no_peserta')
                     ->getStateUsing(fn($record) => $record->peserta?->no_peserta)
                     ->width('120px'),
@@ -81,6 +87,10 @@ class PesertaRelationManager extends RelationManager
                 TextColumn::make('status_ujian')
                     ->badge()
                     ->color(fn($record) => $record->statusUjianColor),
+                TextColumn::make('nilai_akhir')
+                    ->label("Nilai Akhir")
+                    ->badge()
+                    ->color(fn($state) => $state >= 400 ? Color::Green : Color::Red),
                 TextColumn::make('sertifikat')
                     ->label('Sertifikat')
                     ->state(fn($record) => filled($record->selesai) ? 'Unduh' : '')
@@ -94,7 +104,18 @@ class PesertaRelationManager extends RelationManager
                     ->openUrlInNewTab()
             ])
             ->filters([
-                //
+                Filter::make('belum_validasi')
+                    ->label('Belum Divalidasi')
+                    ->query(fn(Builder $query) => $query->whereNull('validasi'))
+                    ->toggle(),
+                Filter::make('sudah_selesai')
+                    ->label('Sudah Selesai Ujian')
+                    ->query(fn(Builder $query) => $query->whereNotNull('selesai'))
+                    ->toggle(),
+                Filter::make('lulus')
+                    ->label('Hanya Lulus (≥ 400)')
+                    ->query(fn(Builder $query) => $query->where('nilai_akhir', '>=', 400))
+                    ->toggle(),
             ])
             ->headerActions([
                 Action::make('selesaikanSemuaUjian')
@@ -131,6 +152,7 @@ class PesertaRelationManager extends RelationManager
                 ActionGroup::make([
                     Action::make('validasi')
                         ->icon(Heroicon::CheckBadge)
+                        ->visible(fn($record) => $record->validasi == null)
                         ->color('success')
                         ->requiresConfirmation()
                         ->action(function ($record) {
@@ -144,6 +166,12 @@ class PesertaRelationManager extends RelationManager
                                 ->success()
                                 ->send();
                         }),
+                    Action::make('batalValidasi')
+                        ->icon(Heroicon::XCircle)
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn($record) => $record->validasi != null)
+                        ->action(fn($record) => $record->update(['validasi' => null])),
                     Action::make('detailUjian')
                         ->icon(Heroicon::NumberedList)
                         ->modalWidth(Width::ExtraLarge)

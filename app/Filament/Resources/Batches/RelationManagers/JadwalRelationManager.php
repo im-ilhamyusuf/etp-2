@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
+
 class JadwalRelationManager extends RelationManager
 {
     protected static string $relationship = 'jadwal';
@@ -67,6 +68,10 @@ class JadwalRelationManager extends RelationManager
             ->recordTitleAttribute('mulai')
             ->defaultSort('mulai', 'desc')
             ->columns([
+                TextColumn::make('no')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
                 TextColumn::make('mulai')
                     ->dateTime('d F Y H:i')
                     ->searchable(),

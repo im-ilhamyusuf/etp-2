@@ -11,6 +11,9 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 
 class JadwalsTable
 {
@@ -59,7 +62,41 @@ class JadwalsTable
                     ->orderBy('mulai', 'desc')
             )
             ->filters([
-                //
+                Filter::make('mulai')
+                    ->label('Tanggal Jadwal')
+                    ->form([
+                        DatePicker::make('dari')
+                            ->label('Dari Tanggal')
+                            ->displayFormat('d/m/Y'),
+                        DatePicker::make('sampai')
+                            ->label('Sampai Tanggal')
+                            ->displayFormat('d/m/Y'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['dari'],
+                                fn(Builder $query, $date) =>
+                                $query->whereDate('mulai', '>=', $date)
+                            )
+                            ->when(
+                                $data['sampai'],
+                                fn(Builder $query, $date) =>
+                                $query->whereDate('mulai', '<=', $date)
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['dari'] ?? null) {
+                            $indicators[] = 'Dari: ' . \Carbon\Carbon::parse($data['dari'])->translatedFormat('d F Y');
+                        }
+                        if ($data['sampai'] ?? null) {
+                            $indicators[] = 'Sampai: ' . \Carbon\Carbon::parse($data['sampai'])->translatedFormat('d F Y');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->recordActions([
                 ActionGroup::make([

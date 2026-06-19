@@ -3,7 +3,10 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\RekapWidget;
+use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
+use Caresome\FilamentAuthDesigner\Data\AuthPageConfig;
 use Filament\Enums\DatabaseNotificationsPosition;
+use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,6 +35,18 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
+            ->plugin(
+                AuthDesignerPlugin::make()
+                    ->defaults(
+                        fn($config) => $config
+                            ->media(asset('images/bg-auth.jpg'))
+                            ->mediaPosition(MediaPosition::Cover)
+                            ->blur(8)
+                    )
+                    ->login()
+                    ->profile()
+                    ->themeToggle()
+            )
             ->resourceCreatePageRedirect('index')
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->navigationGroups([

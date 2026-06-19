@@ -5,6 +5,9 @@ namespace App\Providers\Filament;
 use App\Filament\Peserta\Widgets\JadwalAktifWidget;
 use App\Filament\Peserta\Widgets\LengkapiProfil;
 use App\Filament\Peserta\Widgets\RekapWidget;
+use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
+use Caresome\FilamentAuthDesigner\Data\AuthPageConfig;
+use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,6 +34,19 @@ class PesertaPanelProvider extends PanelProvider
             ->path('peserta')
             ->login()
             ->registration()
+            ->plugin(
+                AuthDesignerPlugin::make()
+                    ->defaults(
+                        fn($config) => $config
+                            ->media(asset('images/bg-auth.jpg'))
+                            ->mediaPosition(MediaPosition::Cover)
+                            ->blur(8)
+                    )
+                    ->login()
+                    ->registration()
+                    ->profile()
+                    ->themeToggle()
+            )
             ->spa()
             ->colors([
                 'primary' => Color::Blue,

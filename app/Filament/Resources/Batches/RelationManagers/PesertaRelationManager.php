@@ -23,6 +23,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class PesertaRelationManager extends RelationManager
 {
@@ -50,6 +52,10 @@ class PesertaRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('no_peserta')
             ->columns([
+                TextColumn::make('no')
+                    ->rowIndex()
+                    ->label('#')
+                    ->width('50px'),
                 TextColumn::make('no_peserta')
                     ->getStateUsing(fn($record) => $record->peserta?->no_peserta)
                     ->width('120px'),
@@ -86,12 +92,20 @@ class PesertaRelationManager extends RelationManager
                     ->boolean()
             ])
             ->filters([
-                //
+                Filter::make('belum_validasi')
+                    ->label('Belum Divalidasi')
+                    ->query(fn(Builder $query) => $query->whereNull('validasi'))
+                    ->toggle(),
+                Filter::make('sudah_short_course')
+                    ->label('Sudah Short Course')
+                    ->query(fn(Builder $query) => $query->whereHas('peserta', fn($q) => $q->whereNotNull('short_course')))
+                    ->toggle(),
             ])
             ->headerActions([])
             ->recordActions([
                 ActionGroup::make([
                     Action::make('validasi')
+                        ->visible(fn($record) => $record->validasi == null)
                         ->icon(Heroicon::CheckBadge)
                         ->color('success')
                         ->requiresConfirmation()
@@ -106,6 +120,12 @@ class PesertaRelationManager extends RelationManager
                                 ->success()
                                 ->send();
                         }),
+                    Action::make('batalValidasi')
+                        ->icon(Heroicon::XCircle)
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn($record) => $record->validasi != null)
+                        ->action(fn($record) => $record->update(['validasi' => null])),
                     Action::make('detailShortCourse')
                         ->icon(Heroicon::NumberedList)
                         ->modalWidth(Width::ExtraLarge)

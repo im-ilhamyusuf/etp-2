@@ -257,7 +257,6 @@ class UjianController extends Controller
             DB::transaction(function () use ($pesertaJadwal, $peserta, $request, &$selesai) {
                 $currentSesi = (int) $pesertaJadwal->sesi_soal;
 
-                // ambil soal yang sedang dijawab
                 $pesertaSoal = PesertaSoal::query()
                     ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
                     ->where('peserta_soals.id', $request->peserta_soal_id)
@@ -266,36 +265,25 @@ class UjianController extends Controller
                     ->select('peserta_soals.no', 'peserta_soals.bank_soal_id')
                     ->first();
 
-                // kalau soal tidak valid → STOP (tidak pindah sesi)
                 if (! $pesertaSoal) {
                     return;
                 }
 
-                // ambil nomor soal TERAKHIR di sesi ini
                 $lastNoInSession = PesertaSoal::query()
                     ->join('bank_soals', 'bank_soals.id', '=', 'peserta_soals.bank_soal_id')
                     ->where('peserta_soals.peserta_id', $peserta->id)
                     ->where('bank_soals.sesi', $currentSesi)
                     ->max('peserta_soals.no');
 
-                // ===============================
-                // ❌ BUKAN SOAL TERAKHIR → STOP
-                // ===============================
                 if ((int) $pesertaSoal->no !== (int) $lastNoInSession) {
                     return;
                 }
 
-                // ===============================
-                // ✅ SOAL TERAKHIR → PINDAH SESI
-                // ===============================
                 $nextSesi = $currentSesi + 1;
-
                 $nextSesiExists = BankSoal::where('sesi', $nextSesi)->exists();
 
                 if ($nextSesiExists) {
-                    $update = [
-                        'sesi_soal' => $nextSesi,
-                    ];
+                    $update = ['sesi_soal' => $nextSesi];
 
                     if ($nextSesi === 4) {
                         $update['batas_sesi'] = now()->addMinutes(25);
@@ -307,11 +295,7 @@ class UjianController extends Controller
 
                     $pesertaJadwal->update($update);
                 } else {
-                    // sesi terakhir → ujian selesai
-                    $pesertaJadwal->update([
-                        'selesai' => now(),
-                    ]);
-
+                    $pesertaJadwal->update(['selesai' => now()]);
                     $selesai = true;
                 }
             });
@@ -325,12 +309,62 @@ class UjianController extends Controller
             soalJawabanId: $request->soal_jawaban_id
         );
 
+        // ✅ Fresh sekali, pakai terus — aman untuk concurrent users
+        $freshJadwal = $pesertaJadwal->fresh();
+        $sesiBeerpindah = $request->sesi != $freshJadwal->sesi_soal;
+
+        $nextSesiData = null;
+
+        if (! $selesai && $sesiBeerpindah) {
+            $nextSesi = $freshJadwal->sesi_soal;
+
+            $pesertaSoals = $peserta->pesertaSoal()
+                ->with(['bankSoal', 'soal.soalJawaban'])
+                ->whereHas('bankSoal', fn($q) => $q->where('sesi', $nextSesi))
+                ->where('jadwal_id', $freshJadwal->jadwal_id)
+                ->orderBy('id')
+                ->get();
+
+            $bankSoal = $pesertaSoals->first()?->bankSoal;
+
+            if ($bankSoal) {
+                $nextSesiData = [
+                    'sesi'       => $nextSesi,
+                    'batas_sesi' => $freshJadwal->batas_sesi,
+                    'bank_soal'  => [
+                        'id'     => $bankSoal->id,
+                        'judul'  => $bankSoal->judul,
+                        'jenis'  => $bankSoal->jenis,
+                        'gambar' => $bankSoal->gambar ? asset('storage/' . $bankSoal->gambar) : null,
+                        'audio'  => $bankSoal->audio ? asset('storage/' . $bankSoal->audio) : null,
+                    ],
+                    'total_soal' => $pesertaSoals->count(),
+                    'soals'      => $pesertaSoals->map(function ($ps) {
+                        return [
+                            'peserta_soal_id' => $ps->id,
+                            'soal_id'         => $ps->soal->id,
+                            'no'              => $ps->no,
+                            'soal_jawaban_id' => $ps->soal_jawaban_id,
+                            'soal'            => $ps->soal->soal,
+                            'sudah'           => $ps->sudah,
+                            'gambar'          => $ps->soal->gambar ? asset('storage/' . $ps->soal->gambar) : null,
+                            'audio'           => $ps->soal->audio ? asset('storage/' . $ps->soal->audio) : null,
+                            'daftar_jawaban'  => ($ps->soal->soalJawaban ?? collect())
+                                ->shuffle()
+                                ->map(fn($j) => ['id' => $j->id, 'jawaban' => $j->jawaban]),
+                        ];
+                    }),
+                ];
+            }
+        }
+
         return response()->json([
-            'success' => true,
-            'message' => 'Jawaban diterima',
-            'selesai' => $selesai,
-            'sesi_berpindah' => $request->sesi != $pesertaJadwal->sesi_soal,
-            'current_sesi' => $pesertaJadwal->sesi_soal,
+            'success'        => true,
+            'message'        => 'Jawaban diterima',
+            'selesai'        => $selesai,
+            'sesi_berpindah' => $sesiBeerpindah,
+            'current_sesi'   => $freshJadwal->sesi_soal,
+            'next_sesi_data' => $nextSesiData,
         ]);
     }
 
