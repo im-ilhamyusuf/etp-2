@@ -81,7 +81,10 @@ class ShortCourse extends Page implements HasTable
                     ->label('Buka')
                     ->icon(Heroicon::Eye)
                     ->url(fn($record) => url("/peserta/short-course/{$record->id}"))
-                    ->visible(fn($record) => $record->validasi != null)
+                    ->visible(fn($record) => 
+                        $record->validasi != null 
+                        && $record->batch?->mulai <= now()
+                    )
             ])
             ->emptyStateHeading('Belum Ada Short Course')
             ->emptyStateDescription('Silakan daftar batch terlebih dahulu.');

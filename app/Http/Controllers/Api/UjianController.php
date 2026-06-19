@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+
 class UjianController extends Controller
 {
     public function mulai(Request $request)
@@ -93,6 +94,32 @@ class UjianController extends Controller
         }
 
         // 5. set mulai ujian (sekali saja)
+        // Cek dan isi kode & number jika masih null
+        // if (is_null($pesertaJadwal->kode) || is_null($pesertaJadwal->number)) {
+        //     $prefix = 'ETP/LP2B-ITG/2026/';
+
+        //     // Ambil number tertinggi yang sudah ada, lalu increment
+        //     $lastNumber = PesertaJadwal::whereNotNull('number')
+        //         ->max('number');
+
+        //     $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
+
+        //     // Format jadi 4 digit, misal: 0001, 0002, dst
+        //     $formattedNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        //     $pesertaJadwal->update([
+        //         'kode'      => $prefix,
+        //         'nomor'    => $nextNumber,
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // } else {
+        //     $pesertaJadwal->update([
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // }
+
         $pesertaJadwal->update([
             'mulai'     => $now,
             'sesi_soal' => 1,
@@ -464,74 +491,82 @@ class UjianController extends Controller
 
         Carbon::setLocale('en');
 
+        $levelData = $this->getLevelDanKeterangan((int) $pesertaJadwal->nilai_akhir);
+
         $data = [
             'nama' => $peserta->user?->name,
             'tempat_lahir' => $peserta->tempat_lahir,
             'tanggal_lahir' => $peserta->tanggal_lahir->translatedFormat('F jS, Y'),
-            'nomor_tes' => $peserta->no_peserta,
+            'nomor_tes' => $pesertaJadwal->kode . $pesertaJadwal->id,
             'tanggal_tes' => $jadwal->mulai->translatedFormat('F jS, Y'),
             'poin_a' => $pesertaJadwal->poin_a,
             'poin_b' => $pesertaJadwal->poin_b,
             'poin_c' => $pesertaJadwal->poin_c,
             'nilai_akhir' => $pesertaJadwal->nilai_akhir,
             'berlaku_sampai' => Carbon::parse($jadwal->mulai)->addYears(2)->format('F jS, Y'),
-            'foto' => public_path('storage/' . $peserta->foto)
+            'foto' => public_path('storage/' . $peserta->foto),
+            'level'      => $levelData['level'],
+            'keterangan' => $levelData['keterangan'],
         ];
 
-        try {
-            // Siapkan informasi untuk API E-Sign
-            $information = [
-                ['Name' => $data['nama']],
-                ['Place & Date of Birth' => $data['tanggal_lahir'] . ', ' . $data['tempat_lahir']],
-                ['Test Number' => $data['nomor_tes']],
-                ['Listening Comprehension' => $data['poin_a']],
-                ['Structure and Written Expression' => $data['poin_b']],
-                ['Reading Comprehension' => $data['poin_c']],
-                ['Total Score' => $data['nilai_akhir']],
-                ['Valid Until' => $data['berlaku_sampai']],
-            ];
+        $information = [];
+        $information[] = ['Name' => $data['nama']];
+        $information[] = ['Place & Date of Birth' => $data['tempat_lahir'] . ', ' . $data['tanggal_lahir']];
+        $information[] = ['Test Number'                      => $data['nomor_tes']];
+        $information[] = ['Listening Comprehension'          => $data['poin_a']];
+        $information[] = ['Structure and Written Expression' => $data['poin_b']];
+        $information[] = ['Reading Comprehension'            => $data['poin_c']];
+        $information[] = ['Total Score'                      => $data['nilai_akhir']];
+        $information[] = ['Valid Until'                      => $data['berlaku_sampai']];
 
-            // Lakukan request POST ke API E-Sign
-            $responseDigitalSign = Http::post('https://api-esign.itg.ac.id/api/document', [
-                'subject' => 'Sertifikat ETP',
-                'signer' => "Reski Ramadhani, S.Pd., M.Hum.",
-                'information' => $information,
-            ]);
+        $responseDigitalSign = Http::post('http://api-esign.itg.ac.id/api/document', [
+            'subject'     => 'Sertifikat ETP',
+            // 'signer'      => 'Reski Ramadhani, S.Pd., M.Hum.',
+            'information' => $information
+        ]);
 
-            // Cek jika request berhasil
-            if ($responseDigitalSign->successful()) {
-                $jsonResponse = $responseDigitalSign->json();
-
-                if (isset($jsonResponse['data'])) {
-                    $urlDigitalSign = $jsonResponse['data']['url'];
-
-                    // Generate QR Code
-                    $data['ttd'] = base64_encode(QrCode::format('png')
-                        ->merge(public_path('images/logo_ttd.png'), 0.3, true)
-                        ->size(75)
-                        ->errorCorrection('H')
-                        ->generate($urlDigitalSign));
-
-                    // Generate PDF
-                    $pdf = Pdf::loadView('pdf.sertifikat', $data);
-                    $pdf->setPaper('A5', 'landscape');
-
-                    return $pdf->stream('Certificate_ETP_' . $data['nomor_tes'] . '.pdf');
-                } else {
-                    // Jika 'data' tidak ada di respons JSON
-                    return response()->json(['error' => 'Data tidak ditemukan dalam respons JSON. ' . $responseDigitalSign->body()], 500);
-                }
-            } else {
-                // Tangani error dari API dengan status dan pesan yang lebih informatif
-                $errorMessage = $responseDigitalSign->status() . ': ' . $responseDigitalSign->body();
-                return response()->json(['error' => 'Gagal melakukan permintaan digital sign. ' . $errorMessage], $responseDigitalSign->status());
-            }
-        } catch (\Illuminate\Http\Client\RequestException $e) {
-            // Tangani error terkait permintaan HTTP
-            return response()->json(['error' => 'Permintaan gagal. ' . $e->getMessage()], 500);
-        } catch (\Exception $e) {
-            // Tangani error umum lainnya
-            return response()->json(['error' => 'Terjadi kesalahan saat melakukan permintaan digital sign. ' . $e->getMessage()], 500);
+        if ($responseDigitalSign->failed()) {
+            return response()->json([
+                'error' => 'Gagal menghubungi API E-Sign.',
+                'status' => $responseDigitalSign->status(),
+                'detail' => $responseDigitalSign->body(),
+            ], $responseDigitalSign->status());
         }
+
+        $urlDigitalSign = $responseDigitalSign->json('data.url');
+
+        if (!$urlDigitalSign) {
+            return response()->json([
+                'error' => 'URL digital sign tidak ditemukan dalam respons.',
+                'detail' => $responseDigitalSign->json(),
+            ], 500);
+        }
+
+        $qrCode = base64_encode(
+            QrCode::format('svg')
+                ->size(100)
+                ->errorCorrection('H')
+                ->generate($urlDigitalSign)
+        );
+
+        $data['ttd'] = 'data:image/svg+xml;base64,' . $qrCode;
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.sertifikat', $data);
+        $pdf->setPaper('A5', 'landscape');
+
+        return $pdf->stream('Certificate_ETP_' . $peserta->user?->name . '.pdf');
+    }
+
+    function getLevelDanKeterangan(int $nilaiAkhir): array
+    {
+        return match (true) {
+            $nilaiAkhir >= 310 && $nilaiAkhir <= 420 => ['level' => 'A2', 'keterangan' => 'Basic'],
+            $nilaiAkhir >= 421 && $nilaiAkhir <= 480 => ['level' => 'B1', 'keterangan' => 'Intermediate'],
+            $nilaiAkhir >= 481 && $nilaiAkhir <= 520 => ['level' => 'B2', 'keterangan' => 'Upper Intermediate'],
+            $nilaiAkhir >= 521 && $nilaiAkhir <= 600 => ['level' => 'C1', 'keterangan' => 'Advanced'],
+            $nilaiAkhir >= 601 && $nilaiAkhir <= 677 => ['level' => 'C2', 'keterangan' => 'Proficient'],
+            default                                   => ['level' => null, 'keterangan' => null],
+        };
     }
 }

@@ -52,6 +52,12 @@ class Sertifikat extends Page implements HasTable
                     ->label('Selesai Ujian')
                     ->dateTime('d F Y H:i')
                     ->timezone('Asia/Jakarta'),
+                TextColumn::make('poin_a')
+                    ->label("Listening"),
+                TextColumn::make('poin_b')
+                    ->label("Structure"),
+                TextColumn::make('poin_c')
+                    ->label("Reading"),
                 TextColumn::make('nilai_akhir')
                     ->label("Nilai Akhir")
                     ->badge()
