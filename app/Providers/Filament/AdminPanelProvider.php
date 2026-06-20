@@ -49,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->resourceCreatePageRedirect('index')
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
+            ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
                 'Master',
                 'Short Course',
