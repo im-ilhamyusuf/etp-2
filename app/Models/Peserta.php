@@ -20,12 +20,16 @@ class Peserta extends Model
         'pekerjaan',
         'instansi',
         'nim',
+        'jurusan',
+        'program_studi',
         'nidn',
         'kewarganegaraan',
         'bahasa',
         'no_hp',
         'email',
         'alamat',
+        'tanggal_sk',
+        'no_sk',
     ];
 
     protected $casts = [

@@ -27,11 +27,19 @@ return new class extends Migration
             $table->string('pekerjaan')->nullable();
             $table->string('instansi')->nullable();
             $table->string('nim')->nullable();
+            // tambah kolom baru
+            $table->string('jurusan')->nullable();
+            $table->string('program_studi')->nullable();
+            // akhir tambah kolom baru
             $table->string('nidn')->nullable();
             $table->enum('kewarganegaraan', ['WNI', 'WNA'])->nullable();
             $table->string('bahasa')->nullable();
             $table->string('no_hp', 20)->nullable();
             $table->text('alamat')->nullable();
+            // tambah kolom baru
+            $table->datetime('tanggal_sk')->nullable();
+            $table->string('no_sk')->nullable();
+            // akhir tambah kolom baru
             $table->timestamps();
         });
     }

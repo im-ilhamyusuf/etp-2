@@ -103,6 +103,15 @@ class PesertaForm
                                     ->belowContent("Isi jika pekerjaan Dosen"),
                             ]),
 
+                        Section::make('Jurusan / Program Studi')
+                            ->description('Isi jika pekerjaan Mahasiswa')
+                            ->columns(2)
+                            ->schema([
+                                TextInput::make('jurusan'),
+                                TextInput::make('program_studi')
+                                    ->label("Program Studi")
+                            ]),
+
                         Section::make('Short Course')
                             ->schema([
                                 DateTimePicker::make('short_course')

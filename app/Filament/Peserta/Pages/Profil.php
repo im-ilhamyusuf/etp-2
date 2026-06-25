@@ -52,6 +52,8 @@ class Profil extends Page implements HasSchemas
                 'pekerjaan' => $user->peserta?->pekerjaan,
                 'instansi' => $user->peserta?->instansi,
                 'nim' => $user->peserta?->nim,
+                'jurusan' => $user->peserta?->jurusan,
+                'program_studi' => $user->peserta?->program_studi,
                 'nidn' => $user->peserta?->nidn,
                 'kewarganegaraan' => $user->peserta?->kewarganegaraan,
                 'bahasa' => $user->peserta?->bahasa,
@@ -157,6 +159,15 @@ class Profil extends Page implements HasSchemas
                                 TextInput::make('peserta.nidn')
                                     ->label("NIDN")
                                     ->belowContent("Isi jika pekerjaan Dosen"),
+                            ]),
+
+                        Section::make('Jurusan / Program Studi')
+                            ->description('Isi jika pekerjaan Mahasiswa')
+                            ->columns(2)
+                            ->schema([
+                                TextInput::make('peserta.jurusan'),
+                                TextInput::make('peserta.program_studi')
+                                    ->label("Program Studi")
                             ]),
                     ])
                     ->columnOrder([
