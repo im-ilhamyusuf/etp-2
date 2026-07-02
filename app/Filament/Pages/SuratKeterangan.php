@@ -41,7 +41,7 @@ class SuratKeterangan extends Page implements HasTable
 
         $nextNumber = $last ? ((int) $last) + 1 : 1;
 
-        return str_pad($nextNumber, 3, '0', STR_PAD_LEFT); // "001", "002", dst
+        return str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     public function table(Table $table)
@@ -57,8 +57,9 @@ class SuratKeterangan extends Page implements HasTable
                     'pesertaJadwal as nilai_tertinggi' => function ($query) {
                         $query->whereNotNull('selesai');
                     }
-                ], 'nilai_akhir')  // nama kolom di tabel peserta_jadwal
+                ], 'nilai_akhir') 
                 ->having('tes_selesai_count', '>=', 3)
+                ->having('nilai_tertinggi', '<', 400)
                 ->orderByDesc('tes_selesai_count'))
             ->columns([
                 TextColumn::make('no')
@@ -122,6 +123,22 @@ class SuratKeterangan extends Page implements HasTable
             ])
             ->actions([
                 ActionGroup::make([
+                    Action::make('unduh_sk')
+                        ->label('Unduh Surat Keterangan')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('danger')
+                        ->visible(fn($record) => !is_null($record->tanggal_sk))
+                        ->url(fn($record) => route('sk.download', $record->id))
+                        ->openUrlInNewTab(),
+
+                    Action::make('unduh_lampiran')
+                        ->label('Unduh Lampiran')
+                        ->icon('heroicon-o-paper-clip')
+                        ->color('info')
+                        ->visible(fn($record) => !is_null($record->tanggal_sk))
+                        ->url(fn($record) => route('sk.download.lampiran', $record->id))
+                        ->openUrlInNewTab(),
+                        
                     Action::make('isi_tanggal_sk')
                         ->label('Isi Tanggal SK')
                         ->icon('heroicon-o-calendar')

@@ -95,32 +95,33 @@ class UjianController extends Controller
 
         // 5. set mulai ujian (sekali saja)
         // Cek dan isi kode & number jika masih null
-        if (is_null($pesertaJadwal->kode) || is_null($pesertaJadwal->number)) {
-            $prefix = 'ETP/LP2B-ITG/2026/';
+        // if (is_null($pesertaJadwal->kode) || is_null($pesertaJadwal->number)) {
+        //     $prefix = 'ETP/LP2B-ITG/2026/';
 
-            // Ambil number tertinggi yang sudah ada, lalu increment
-            $lastNumber = PesertaJadwal::whereNotNull('number')
-                ->max('number');
+        //     // Ambil number tertinggi yang sudah ada, lalu increment
+        //     $lastNumber = PesertaJadwal::whereNotNull('number')
+        //         ->max('number');
 
-            $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
+        //     $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
 
-            // Format jadi 4 digit, misal: 0001, 0002, dst
-            $formattedNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        //     // Format jadi 4 digit, misal: 0001, 0002, dst
+        //     $formattedNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-            $pesertaJadwal->update([
-                'kode'      => $prefix,
-                'nomor'    => $nextNumber,
-                'mulai'     => $now,
-                'sesi_soal' => 1,
-            ]);
-        } else {
-            $pesertaJadwal->update([
-                'mulai'     => $now,
-                'sesi_soal' => 1,
-            ]);
-        }
+        //     $pesertaJadwal->update([
+        //         'kode'      => $prefix,
+        //         'nomor'    => $nextNumber,
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // } else {
+        //     $pesertaJadwal->update([
+        //         'mulai'     => $now,
+        //         'sesi_soal' => 1,
+        //     ]);
+        // }
 
         $pesertaJadwal->update([
+            'kode' => 'ETP/LP2B-ITG/2026/',
             'mulai'     => $now,
             'sesi_soal' => 1,
         ]);

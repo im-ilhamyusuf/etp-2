@@ -35,18 +35,18 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
-            ->plugin(
-                AuthDesignerPlugin::make()
-                    ->defaults(
-                        fn($config) => $config
-                            ->media(asset('images/bg-auth.jpg'))
-                            ->mediaPosition(MediaPosition::Cover)
-                            ->blur(8)
-                    )
-                    ->login()
-                    ->profile()
-                    ->themeToggle()
-            )
+            // ->plugin(
+            //     AuthDesignerPlugin::make()
+            //         ->defaults(
+            //             fn($config) => $config
+            //                 ->media(asset('images/bg-auth.jpg'))
+            //                 ->mediaPosition(MediaPosition::Cover)
+            //                 ->blur(8)
+            //         )
+            //         ->login()
+            //         ->profile()
+            //         ->themeToggle()
+            // )
             ->resourceCreatePageRedirect('index')
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->sidebarCollapsibleOnDesktop()

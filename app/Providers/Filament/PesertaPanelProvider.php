@@ -35,19 +35,19 @@ class PesertaPanelProvider extends PanelProvider
             ->default()
             ->login()
             ->registration()
-            ->plugin(
-                AuthDesignerPlugin::make()
-                    ->defaults(
-                        fn($config) => $config
-                            ->media(asset('images/bg-auth.jpg'))
-                            ->mediaPosition(MediaPosition::Cover)
-                            ->blur(8)
-                    )
-                    ->login()
-                    ->registration()
-                    ->profile()
-                    ->themeToggle()
-            )
+            // ->plugin(
+            //     AuthDesignerPlugin::make()
+            //         ->defaults(
+            //             fn($config) => $config
+            //                 ->media(asset('images/bg-auth.jpg'))
+            //                 ->mediaPosition(MediaPosition::Cover)
+            //                 ->blur(8)
+            //         )
+            //         ->login()
+            //         ->registration()
+            //         ->profile()
+            //         ->themeToggle()
+            // )
             ->spa()
             ->colors([
                 'primary' => Color::Blue,

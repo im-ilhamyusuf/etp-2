@@ -35,6 +35,7 @@ class SuratKeteranganService
                 ->translatedFormat('j F Y'),
             'no_sk'         => $peserta->no_sk,
             'tahun'         => \Carbon\Carbon::parse($peserta->tanggal_sk)->year,
+            // 'bulan_romawi'  => ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][\Carbon\Carbon::parse($peserta->tanggal_sk)->month - 1],
         ]);
 
         // Sisipkan QR Code
